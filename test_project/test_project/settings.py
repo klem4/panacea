@@ -1,5 +1,5 @@
 # Django settings for test_project project.
-
+# coding: utf-8
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -109,6 +109,11 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
 )
 
+import sys
+# эта настройка нужна исклбчительно для запуска тестов
+# в тестовом приложении
+sys.path.append('/Users/klem4/Development/panacea_v2/test_project/test_project')
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -119,7 +124,7 @@ INSTALLED_APPS = (
     'test_project.test_app',
     'cacheops',
     'rest_framework',
-    'test_project.panacea',
+    'panacea',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
