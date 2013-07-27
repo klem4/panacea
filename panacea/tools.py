@@ -1,5 +1,6 @@
 # coding: utf-8
 from django.conf import settings
+import logging
 
 
 def _get(globals, name):
@@ -23,3 +24,13 @@ def _get(globals, name):
         return getattr(settings, name)
     except:
         return globals[name]
+
+
+def get_logger():
+    import panacea.config as conf
+
+    logger_name = conf.get('PCFG_LOGGER_NAME')
+    if logger_name:
+       return logging.getLogger(logger_name)
+logger = get_logger()
+
