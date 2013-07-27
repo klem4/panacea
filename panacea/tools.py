@@ -3,7 +3,7 @@ from django.conf import settings
 import logging
 
 
-def _get(globals, name):
+def _get(_globals, name):
     u"""
     метод для получения значения из конфига
     сначала ищем в settings, если параметра там нет
@@ -23,7 +23,7 @@ def _get(globals, name):
     try:
         return getattr(settings, name)
     except:
-        return globals[name]
+        return _globals[name]
 
 
 def get_logger():
