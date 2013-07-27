@@ -1,5 +1,6 @@
 # Django settings for test_project project.
 
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -117,7 +118,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'test_project.test_app',
     'cacheops',
-    'rest_framework'
+    'rest_framework',
+    'test_project.panacea',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
