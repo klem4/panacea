@@ -23,6 +23,6 @@ class DjangoRestFramework0x(RestFramework):
     pass
 
 
-class DjangoRestFramework2x(BaseFramework):
+class DjangoRestFramework2x(RestFramework):
     pass
 
