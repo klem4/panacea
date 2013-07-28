@@ -29,7 +29,7 @@ class CacheEngine(object):
             method_name = 'chk_%s' % checker_name
             if hasattr(self, method_name):
                 checker_method = getattr(self, 'chk_%s' % checker_name)
-                if checker_method and not checker_method():
+                if not checker_method():
                     return
             else:
                 logger.error("handler not found: %s" % method_name)

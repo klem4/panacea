@@ -35,3 +35,15 @@ class ApiSmokeTestCases(BaseTestCaseMixin, TestCase):
         self.assertEqual(self.client.get(
             reverse('api_promo_list'),
         ).status_code, 200)
+
+
+class TestAllowCachingSimpleMethods(BaseTestCaseMixin, TestCase):
+    """
+    класс тестирования метода принимающего решение
+    о необходимости кеширования ответа от апи
+    """
+    def testMethodChk(self):
+        """
+        проверяем часть отвечающую за проверку метода запроса
+        """
+        self.fail('not implemented')
