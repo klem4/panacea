@@ -1,7 +1,10 @@
 # coding: utf-8
 
 from panacea.engine import CacheEngine
-from panacea import frameworks
+from panacea import rest_wrappers
+from panacea.tools import get_logger
+
+logger = get_logger()
 
 
 class NginxRedisCachingMiddleware(object):
@@ -23,18 +26,17 @@ class NginxRedisCachingMiddleware(object):
 
     rest_frameworks = (
         # умеем работать в объектами django-rest-framework версий 2.x
-        frameworks.DjangoRestFramework2x,
+        rest_wrappers.DjangoRestFramework2x,
         # умеем работать в объектами django-rest-framework версий 0.x
-        frameworks.DjangoRestFramework0x,
+        rest_wrappers.DjangoRestFramework0x,
     )
 
     def process_response(self, request, response):
         try:
-            engine = CacheEngine(request, response)
+            engine = CacheEngine(request, response, self.rest_frameworks)
             if engine.allow_caching():
                 engine.store_cache()
         except Exception as e:
-            from panacea.tools import logger
             logger.error(e)
 
         return response

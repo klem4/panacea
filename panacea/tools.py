@@ -29,4 +29,3 @@ def _get(_globals, name):
 def get_logger():
     import panacea.config as conf
     return logging.getLogger(conf.get('PCFG_LOGGER_NAME'))
-logger = get_logger()
