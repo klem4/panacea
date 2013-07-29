@@ -39,13 +39,13 @@ class CacheEngine(object):
         """
         кешируем только ответы с определенынми статусами
         """
-        return self.response.status_code in conf.get('PSHM_ALLOWED_STATUS_CODES')
+        return self.response.status_code in conf.get('PCFG_ALLOWED_STATUS_CODES')
 
     def chk_content_type(self):
         """
         кешируем только ответы определенного типа
         """
-        return False
+        return self.response.get('content-type') == conf.get('PCFG_ALLOWED_CONTENT_TYPE')
 
     def chk_scheme(self):
         return False
