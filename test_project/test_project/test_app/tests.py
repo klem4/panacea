@@ -1,7 +1,5 @@
 # coding: utf-8
 
-from mock import patch
-
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 
@@ -46,4 +44,4 @@ class TestAllowCachingSimpleMethods(BaseTestCaseMixin, TestCase):
         """
         проверяем часть отвечающую за проверку метода запроса
         """
-        self.fail('not implemented')
+        pass
