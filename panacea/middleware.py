@@ -20,7 +20,9 @@ class NginxRedisCachingMiddleware(object):
             engine = CacheEngine(request, response)
             if engine.allow_caching():
                 engine.store_cache()
+        except AssertionError as e:
+            logger.error("Assertion error: %s" % e.message)
         except Exception as e:
-            logger.error(e)
+            logger.error("Unhandled error: %s" % e.message)
 
         return response

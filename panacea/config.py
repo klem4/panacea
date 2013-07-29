@@ -12,7 +12,7 @@ u"""
 """
 
 from panacea.tools import _get
-get = lambda name: _get(globals(), name)
+get = lambda name, **kwargs: _get(globals(), name, **kwargs)
 
 __all__ = ['get']
 

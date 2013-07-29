@@ -1,9 +1,11 @@
 # coding: utf-8
 
 import panacea.config as conf
+from panacea.schemes import CacheScheme
 from panacea.tools import get_logger
 
 logger = get_logger()
+
 
 class CacheEngine(object):
     u"""
@@ -13,6 +15,7 @@ class CacheEngine(object):
     def __init__(self, request, response):
         self.request = request
         self.response = response
+        self.scheme = None
 
     def store_cache(self):
         pass
@@ -48,4 +51,12 @@ class CacheEngine(object):
         return self.response.get('content-type') == conf.get('PCFG_ALLOWED_CONTENT_TYPE')
 
     def chk_scheme(self):
-        return False
+        """
+        метод проверки необходимости кеширования
+        данного урла, производит поиск данных
+        о кешировании в конфиге, в случае удачи, сохраняет
+        вычисленные и необходимые для кеширования промежуточные
+        данные и возвращает True
+        """
+        self.scheme = CacheScheme.filter(request=self.request)
+        return self.scheme and self.scheme.enabled
