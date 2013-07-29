@@ -2,16 +2,21 @@
 
 from django.test import TestCase
 from django.core.urlresolvers import reverse
+from django.utils import simplejson
 
 from test_project.test_app import models
 
 
 class BaseTestCaseMixin(object):
     def setUp(self):
-        pass
+        self.promo1 = models.Promo.objects.create(name='promo1')
+        self.promo2 = models.Promo.objects.create(name='promo2')
 
     def tearDown(self):
         pass
+
+    def load(self, response):
+        return simplejson.loads(response.content)
 
 
 class ApiSmokeTestCases(BaseTestCaseMixin, TestCase):
@@ -20,16 +25,17 @@ class ApiSmokeTestCases(BaseTestCaseMixin, TestCase):
     """
 
     def test_promo_single_smoke(self):
-        promo = models.Promo.objects.create(name='promo1')
+        response = self.client.get(
+            reverse('api_promo_single', args=(self.promo1.pk,))
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            self.load(response),
+            {'id': self.promo1.id, 'name': self.promo1.name}
+        )
 
-        self.assertEqual(self.client.get(
-            reverse('api_promo_single', args=(promo.pk,)),
-        ).status_code, 200)
 
     def test_promo_list_smoke(self):
-        models.Promo.objects.create(name='promo1')
-        models.Promo.objects.create(name='promo2')
-
         self.assertEqual(self.client.get(
             reverse('api_promo_list'),
         ).status_code, 200)

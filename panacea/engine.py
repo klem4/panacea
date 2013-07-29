@@ -30,19 +30,19 @@ class CacheEngine(object):
         return True
 
     def chk_method(self):
-        """
+        u"""
         кешируем только GET-запросы
         """
         return self.request.method == 'GET'
 
     def chk_status_code(self):
-        """
+        u"""
         кешируем только ответы с определенынми статусами
         """
         return self.response.status_code in conf.get('PCFG_ALLOWED_STATUS_CODES')
 
     def chk_content_type(self):
-        """
+        u"""
         кешируем только ответы определенного типа
         """
         return self.response.get('content-type') == conf.get('PCFG_ALLOWED_CONTENT_TYPE')
