@@ -12,7 +12,7 @@ class NginxRedisCachingMiddleware(object):
     в случае прохождения проверки, сохраняет
     контент ответа в redis средствами cacheops для
     полсдедующей возожной отдачи непосредственно nginx'ом
-    по средствам подуля httpredis
+    по средствам модуля httpredis
     """
 
     def process_response(self, request, response):
@@ -20,8 +20,6 @@ class NginxRedisCachingMiddleware(object):
             engine = CacheEngine(request, response)
             if engine.allow_caching():
                 engine.store_cache()
-        except AssertionError as e:
-            logger.error("Assertion error: %s" % e.message)
         except Exception as e:
             logger.error("Unhandled error: %s" % e.message)
 
