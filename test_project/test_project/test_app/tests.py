@@ -1,11 +1,12 @@
 # coding: utf-8
 
-from mock import patch
+from mock import patch, Mock
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.utils import simplejson
 
 from test_project.test_app import models
+from panacea import config as conf
 
 
 class BaseTestCaseMixin(object):
@@ -65,12 +66,39 @@ class TestAllowCachingMethods(BaseTestCaseMixin, TestCase):
 
     @patch('panacea.engine.CacheEngine.store_cache')
     def testWrongMethod(self, patched_store):
-        # проверяем, что не кешируем ответы
-        # в случае запроов неверным методом
-        # по факту - кешируем только get-запросы
+        """
+            проверяем, что не кешируем ответы
+            в случае запроов неверным методом
+            по факту - кешируем только get-запросы
+        """
 
         known_methods = ('post', 'put', 'delete')
         for method in known_methods:
             _method = getattr(self.client, method)
             _method(self.url1)
             self.assertFalse(patched_store.called)
+
+    @patch('panacea.engine.CacheEngine.store_cache')
+    @patch('django.http.HttpResponse.status_code')
+    def testWrongStatusCode(self, patched_response, patched_store):
+        """
+        проверяем, что не кешируем ответы
+        в случае неверного кода ответа api
+        """
+
+        known_status_codes = sorted(conf.get('PCFG_ALLOWED_STATUS_CODES'))
+
+        some_bad_code = known_status_codes[-1] + 1
+
+        patched_response.__get__ = Mock(return_value=some_bad_code)
+        patched_response.__set__ = Mock()
+
+        r = self.client.get(self.url1)
+        self.assertEqual(r.status_code, some_bad_code)
+        self.assertFalse(patched_store.called)
+
+        for status in known_status_codes:
+             patched_response.__get__ = Mock(return_value=status)
+             r = self.client.get(self.url1)
+             self.assertEqual(r.status_code, status)
+             self.assertTrue(patched_store.called)
