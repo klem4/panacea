@@ -16,6 +16,8 @@ get = lambda name, **kwargs: _get(globals(), name, **kwargs)
 
 __all__ = ['get']
 
+# глобальный рубильник
+PCFG_ENABLED = False
 
 # префикс ключей в redis
 PCFG_KEY_PREFIX = 'panacea.'
@@ -56,7 +58,9 @@ PCFG_CACHING = {
     'schemes': {
         # каждый ключ - alias django urlconf
         'some_urlconf_alias': {
-
+            # необязательный ключ активности данной схемы,
+            # по дефолту = True
+            "enabled": True,
         }
     }
 }

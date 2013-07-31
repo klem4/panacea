@@ -114,7 +114,8 @@ class TestAllowCachingMethods(BaseTestCaseMixin, TestCase):
         проверим, что сохраняются только данные заданного формата
         в тестовом приложении мы сохраняем только application/json
         """
-        r = self.client.get(self.url1 + '?format=xml')
+        url = self.url1 + '?format=xml'
+        r = self.client.get(url)
         self.assertFalse(patched_store.called)
         self.assertEqual(r.status_code, 200)
 
@@ -138,5 +139,13 @@ class TestAllowCachingMethods(BaseTestCaseMixin, TestCase):
 
         settings.PCFG_CACHING['schemes']['api_promo_single']['enabled'] = True
 
-    def testGlobalDisabled(self):
-        self.fail()
+    @patch('panacea.engine.CacheEngine.store_cache')
+    def testGlobalDisabled(self, patched_store):
+        from django.conf import settings
+        settings.PCFG_ENABLED = False
+
+        r = self.client.get(self.url1)
+        self.assertEqual(r.status_code, 200)
+        self.assertFalse(patched_store.called)
+
+        settings.PCFG_ENABLED = True

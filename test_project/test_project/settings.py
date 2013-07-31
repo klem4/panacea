@@ -149,6 +149,14 @@ CACHEOPS = {
     '*.*': ('all', 5 * 60),
 }
 
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.XMLRenderer',
+    )
+}
+
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error when DEBUG=False.
@@ -195,6 +203,7 @@ LOGGING = {
 }
 
 #######
+PCFG_ENABLED = True
 PCFG_LOGGER_NAME = 'django'
 
 PCFG_CACHING = {

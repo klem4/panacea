@@ -21,6 +21,15 @@ class CacheEngine(object):
         pass
 
     def allow_caching(self):
+        """
+        проверяем, необходимо ли кешированть
+        данный запрос
+        """
+
+        # кеширование отключено глобально
+        if not conf.get('PCFG_ENABLED', default=False):
+            return
+
         for checker_name in ('method', 'status_code', 'content_type', 'scheme'):
             method_name = 'chk_%s' % checker_name
             if hasattr(self, method_name):
@@ -29,7 +38,8 @@ class CacheEngine(object):
                     return
             else:
                 logger.error("handler not found: %s" % method_name)
-                return False
+                return
+
         return True
 
     def chk_method(self):
