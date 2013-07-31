@@ -6,7 +6,6 @@ from django.core.urlresolvers import reverse
 from django.utils import simplejson
 
 from test_project.test_app import models
-from panacea import config as conf
 
 
 class BaseTestCaseMixin(object):
