@@ -56,17 +56,28 @@ class CacheScheme(object):
                 'filter %s is not callable' % filter_name
             )
 
-        scheme = _filter(value)
+        scheme_dict = _filter(value)
 
-        if scheme:
-            return cls(scheme)
+        if scheme_dict is not None:
+            if not cls.scheme_dict_valid(scheme_dict):
+                raise exceptions.PConfigException('wrong scheme format: %s' % value)
+
+            return cls(scheme_dict)
+
+
+    @classmethod
+    def scheme_dict_valid(cls, scheme_dict):
+        if not isinstance(scheme_dict, dict):
+            return False
+
+        return True
 
     @classmethod
     def filter_by_alias(cls, alias):
         """
         поиск конфигурации кеширования по алиасу
         """
-        return cls.cache_conf['schemes'].get(alias) 
+        return cls.cache_conf['schemes'].get(alias)
 
     @classmethod
     def filter_by_request(cls, request):

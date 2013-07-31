@@ -2,6 +2,8 @@
 # coding: utf-8
 
 DEBUG = True
+LOG_LEVEL = 'ERROR'
+
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -187,10 +189,36 @@ LOGGING = {
         'django': {
             'handlers': ['console'],
             'propagate': True,
-            'level': 'INFO',
+            'level': 'DEBUG',
         },
     }
 }
 
 #######
 PCFG_LOGGER_NAME = 'django'
+
+PCFG_CACHING = {
+    # учитваемые по дефолту значения при построении ключа
+    'key_defaults': {
+        # всегда включаем в состав ключа эти ...
+        # -"- get-параметра
+        'querystring_args': [],
+        # -"- заголовки
+        'headers': [],
+        # -"- куки
+        'cookies': []
+    },
+    # в каком порядке учитывать блоки значений
+    # сначала в ключе пойду параметры query_string(сначала дефолтные
+    # в указанном порядке), затем, если указаны, то конкретные для схемы, также
+    # в указанном порядке
+    # дале по аналогии с остальными блоками: headers, cookies
+    'key_defaults_order': ['querystring_args', 'headers', 'cookies'],
+
+    # схемы кеширования
+    'schemes': {
+        'api_promo_single': {
+
+        }
+    }
+}

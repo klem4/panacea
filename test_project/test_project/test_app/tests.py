@@ -1,5 +1,6 @@
 # coding: utf-8
 
+from mock import patch
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.utils import simplejson
@@ -41,13 +42,23 @@ class ApiSmokeTestCases(BaseTestCaseMixin, TestCase):
         ).status_code, 200)
 
 
-class TestAllowCachingSimpleMethods(BaseTestCaseMixin, TestCase):
+class TestAllowCachingMethods(BaseTestCaseMixin, TestCase):
     """
     класс тестирования метода принимающего решение
     о необходимости кеширования ответа от апи
+
+    технически - проверяем, вызывается ли метод store_caching
+    в различных условиях
     """
-    def testMethodChk(self):
+    def setUp(self):
+        self.promo1 = models.Promo.objects.create(name='promo1')
+        self.url1 = reverse('api_promo_single', args=(self.promo1.pk,))
+
+    @patch('panacea.engine.CacheEngine.store_cache')
+    def testAllPass(self, patched_store):
         """
-        проверяем часть отвечающую за проверку метода запроса
+        по дефолту данный запрос проходит все проверки
         """
-        pass
+
+        self.client.get(self.url1)
+        self.assertTrue(patched_store.called)

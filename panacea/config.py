@@ -32,6 +32,8 @@ PCFG_ALLOWED_STATUS_CODES = (200,)
 PCFG_ALLOWED_CONTENT_TYPE = 'application/json'
 
 
+# структура конфигурации кеширования
+# должна быть полностью переопределена в приложении
 PCFG_CACHING = {
     # учитваемые по дефолту значения при построении ключа
     'key_defaults': {
@@ -51,5 +53,10 @@ PCFG_CACHING = {
     'key_defaults_order': ['querystring_args', 'headers', 'cookies'],
 
     # схемы кеширования
-    'schemes': {}
+    'schemes': {
+        # каждый ключ - alias django urlconf
+        'some_urlconf_alias': {
+
+        }
+    }
 }
