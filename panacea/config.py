@@ -32,6 +32,24 @@ PCFG_ALLOWED_STATUS_CODES = (200,)
 PCFG_ALLOWED_CONTENT_TYPE = 'application/json'
 
 
-PCFG_SHEMES = {
+PCFG_CACHING = {
+    # учитваемые по дефолту значения при построении ключа
+    'key_defaults': {
+        # всегда включаем в состав ключа эти ...
+        # -"- get-параметра
+        'querystring_args': [],
+        # -"- заголовки
+        'headers': [],
+        # -"- куки
+        'cookies': []
+    },
+    # в каком порядке учитывать блоки значений
+    # сначала в ключе пойду параметры query_string(сначала дефолтные
+    # в указанном порядке), затем, если указаны, то конкретные для схемы, также
+    # в указанном порядке
+    # дале по аналогии с остальными блоками: headers, cookies
+    'key_defaults_order': ['querystring_args', 'headers', 'cookies'],
+
+    # схемы кеширования
     'schemes': {}
 }
