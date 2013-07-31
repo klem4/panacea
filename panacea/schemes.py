@@ -8,7 +8,10 @@ logger = get_logger()
 
 
 class CacheScheme(object):
+    cache_conf = conf.get('PCFG_CACHING')
+
     def __init__(self, scheme):
+
         if not isinstance(scheme, dict):
             raise exceptions.PUsageException(
                 'scheme must be a dictionary, not %s' % type(scheme)
@@ -63,7 +66,7 @@ class CacheScheme(object):
         """
         поиск конфигурации кеширования по алиасу
         """
-        return conf.get('schemes', default={}).get(alias)
+        return cls.cache_conf['schemes'].get(alias) 
 
     @classmethod
     def filter_by_request(cls, request):
