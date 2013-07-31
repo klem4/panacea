@@ -6,6 +6,7 @@ from django.core.urlresolvers import reverse
 from django.utils import simplejson
 
 from test_project.test_app import models
+from panacea import config as conf
 
 
 class BaseTestCaseMixin(object):
@@ -51,7 +52,7 @@ class TestAllowCachingMethods(BaseTestCaseMixin, TestCase):
     в различных условиях
     """
     def setUp(self):
-        self.promo1 = models.Promo.objects.create(name='promo1')
+        super(TestAllowCachingMethods, self).setUp()
         self.url1 = reverse('api_promo_single', args=(self.promo1.pk,))
 
     @patch('panacea.engine.CacheEngine.store_cache')
@@ -62,3 +63,15 @@ class TestAllowCachingMethods(BaseTestCaseMixin, TestCase):
 
         self.client.get(self.url1)
         self.assertTrue(patched_store.called)
+
+    @patch('panacea.engine.CacheEngine.store_cache')
+    def testWrongMethod(self, patched_store):
+        # проверяем, что не кешируем ответы
+        # в случае запроов неверным методом
+        # по факту - кешируем только get-запросы
+
+        known_methods = ('post', 'put', 'delete')
+        for method in known_methods:
+            _method = getattr(self.client, method)
+            _method(self.url1)
+            self.assertFalse(patched_store.called)
