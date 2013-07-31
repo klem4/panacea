@@ -54,6 +54,10 @@ class TestAllowCachingMethods(BaseTestCaseMixin, TestCase):
     def setUp(self):
         super(TestAllowCachingMethods, self).setUp()
         self.url1 = reverse('api_promo_single', args=(self.promo1.pk,))
+        self.url1_no_cache = reverse(
+            'api_promo_single_not_in_cache',
+            args=(self.promo1.pk,)
+        )
 
     @patch('panacea.engine.CacheEngine.store_cache')
     def testAllPass(self, patched_store):
@@ -61,8 +65,9 @@ class TestAllowCachingMethods(BaseTestCaseMixin, TestCase):
         по дефолту данный запрос проходит все проверки
         """
 
-        self.client.get(self.url1)
+        r = self.client.get(self.url1)
         self.assertTrue(patched_store.called)
+        self.assertEqual(r.status_code, 200)
 
     @patch('panacea.engine.CacheEngine.store_cache')
     def testWrongMethod(self, patched_store):
@@ -102,3 +107,36 @@ class TestAllowCachingMethods(BaseTestCaseMixin, TestCase):
              r = self.client.get(self.url1)
              self.assertEqual(r.status_code, status)
              self.assertTrue(patched_store.called)
+
+    @patch('panacea.engine.CacheEngine.store_cache')
+    def testContentType(self, patched_store):
+        """
+        проверим, что сохраняются только данные заданного формата
+        в тестовом приложении мы сохраняем только application/json
+        """
+        r = self.client.get(self.url1 + '?format=xml')
+        self.assertFalse(patched_store.called)
+        self.assertEqual(r.status_code, 200)
+
+    @patch('panacea.engine.CacheEngine.store_cache')
+    def testScheme(self, patched_store):
+        """
+        данный url отсутствует в схеме кеширования
+        """
+        r = self.client.get(self.url1_no_cache)
+        self.assertEqual(r.status_code, 200)
+        self.assertFalse(patched_store.called)
+
+    @patch('panacea.engine.CacheEngine.store_cache')
+    def testLocalDisabled(self, patched_store):
+        from django.conf import settings
+        settings.PCFG_CACHING['schemes']['api_promo_single']['enabled'] = False
+
+        r = self.client.get(self.url1)
+        self.assertEqual(r.status_code, 200)
+        self.assertFalse(patched_store.called)
+
+        settings.PCFG_CACHING['schemes']['api_promo_single']['enabled'] = True
+
+    def testGlobalDisabled(self):
+        self.fail()
