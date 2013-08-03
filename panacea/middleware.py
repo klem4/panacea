@@ -21,6 +21,6 @@ class NginxRedisCachingMiddleware(object):
             if engine.allow_caching():
                 engine.store_cache()
         except Exception as e:
-            logger.error("Unhandled error: %s" % e.message)
+            logger.error("Unhandled error[%s]: %s" % (e.__class__, e.message))
 
         return response

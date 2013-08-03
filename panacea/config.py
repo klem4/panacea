@@ -20,7 +20,10 @@ __all__ = ['get']
 PCFG_ENABLED = False
 
 # префикс ключей в redis
-PCFG_KEY_PREFIX = 'panacea.'
+PCFG_KEY_PREFIX = 'panacea:'
+
+# разделитель частей ключа
+PCFG_SEPARATOR = '__'
 
 # имя логгера по умолчанию
 # если значение на задать, будет использован

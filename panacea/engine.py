@@ -18,10 +18,19 @@ class CacheEngine(object):
         self.scheme = None
 
     def store_cache(self):
-        pass
+        u"""
+        кешируем результат выполнения запроса
+        в соответствии с указанной схемой
+        """
+
+        # получим ключ, по которому будет
+        # сохранен конткнт ответа api
+        panacea_key = self.scheme.generate_store_key(self.request)
+        print "panacea_key=%s" % panacea_key
+
 
     def allow_caching(self):
-        """
+        u"""
         проверяем, необходимо ли кешированть
         данный запрос
         """

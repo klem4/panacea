@@ -2,7 +2,6 @@
 from django.core import urlresolvers
 from panacea import config as conf
 from panacea.tools import get_logger
-from panacea import exceptions
 
 logger = get_logger()
 
@@ -11,13 +10,57 @@ class CacheScheme(object):
     cache_conf = conf.get('PCFG_CACHING')
 
     def __init__(self, scheme):
-
-        if not isinstance(scheme, dict):
-            raise exceptions.PUsageException(
-                'scheme must be a dictionary, not %s' % type(scheme)
-            )
-
         self.__scheme = scheme
+
+    def generate_store_key(self, request):
+        """
+        получить ключ, соответствующий данной схеме,
+        по которому будет закеширован
+        контент ответа от api,
+        """
+
+        # получим структуру ключа
+        key_structure = self.generate_key_structure()
+        key_parts = self.generate_key_parts(request)
+
+        return key_structure.format(**key_parts)
+
+    def generate_key_structure(self):
+        u"""
+        полный формат ключа, по умолчанию
+        prefix}{path}{querystring_args}{headers}{cookies}
+        """
+        separator = conf.get("PCFG_SEPARATOR")
+        return "{prefix}{path}%s%s" % (
+                separator,
+                separator.join(
+                "{%s}" % part for part in self.key_defaults_order
+            )
+        )
+
+    def generate_key_parts(self, request):
+        """
+        возвращает словарь со сформированными частями
+        ключа
+        """
+        key_parts = {
+            'prefix': conf.get('PCFG_KEY_PREFIX'),
+            'path': request.path,
+        }
+
+        for part in self.key_defaults_order:
+            key_parts[part] = getattr(self, '_generate_part_%s' % part)(request)
+
+        return key_parts
+
+    def _generate_part_querystring_args(self, request):
+        return "qs"
+
+    def _generate_part_headers(self, request):
+        return "hds"
+
+    def _generate_part_cookies(self, request):
+        return "cc"
 
     @property
     def enabled(self):
@@ -27,6 +70,11 @@ class CacheScheme(object):
         """
         return self.__scheme.get("enabled", True)
 
+    @property
+    def key_defaults_order(self):
+        return self.cache_conf.get("key_defaults_order")
+
+
     @classmethod
     def filter(cls, **lookup):
         """
@@ -34,34 +82,13 @@ class CacheScheme(object):
         в конфиге, в случае успеха, инстанцирует и возвращает
         объект класса CacheScheme
         """
-
-        # можем искать только по одному параметру
-        if not len(lookup) == 1:
-            raise exceptions.PUsageException(
-                'lookup must contains only one argument'
-            )
-
         key, value = lookup.popitem()
         filter_name = "filter_by_%s" % key
 
-        if not hasattr(cls, filter_name):
-            raise exceptions.PUsageException(
-                'no such filter: %s' % filter_name
-            )
-
         _filter = getattr(cls, filter_name)
-
-        if not callable(_filter):
-            raise exceptions.PUsageException(
-                'filter %s is not callable' % filter_name
-            )
-
         scheme_dict = _filter(value)
 
         if scheme_dict is not None:
-            if not cls.scheme_dict_valid(scheme_dict):
-                raise exceptions.PConfigException('wrong scheme format: %s' % value)
-
             return cls(scheme_dict)
 
 
@@ -86,10 +113,6 @@ class CacheScheme(object):
         по объекту django.http.HttpRequest или его наследнику
         """
         from django.http import HttpRequest
-        if not isinstance(request, HttpRequest):
-            raise exceptions.PUsageException(
-                'request must be HttpRequest instance'
-            )
 
         # получим алиас urlconf по урлу
         try:
