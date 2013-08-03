@@ -4,6 +4,7 @@ from mock import patch, Mock
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.utils import simplejson
+from django.conf import settings
 
 from test_project.test_app import models
 from panacea import config as conf
@@ -162,21 +163,55 @@ class TestGenerateKey(BaseTestCaseMixin, TestCase):
         super(TestGenerateKey, self).setUp()
 
         self.cases = [
-            # первый кейс, в составлении ключа
-            # не учавствуют никакие параетры
-
+            # второй кейс, в составлении ключа учавствуют только дефолтные параметры
+            # большинство из них пустые, но они всеравно всегда присутствуют
+            # в ключе
             (
                 reverse(
-                    'api_promo_single_test_key_first',
+                    'api_promo_single_test_key_second',
                     args=(self.promo1.id,)
                 ),
-                'panacea:/api/promo/single/%s/first;;;' % self.promo1.id
+                'panacea:/api/promo/single/%s/second;'
+                'default_qs1=' % self.promo1.id
             )
         ]
 
 
     @patch('panacea.engine.CacheEngine.store_schemes')
-    def testGenerateKeys(self, store_schemes):
-        for url, key in self.cases:
-            self.client.get(url)
-            store_schemes.assert_called_with(key)
+    def testAllPartsEmpty(self, store_schemes):
+        u"""первый кейс, в составлении ключа
+        не учавствуют никакие параетры
+        """
+        url = reverse(
+            'api_promo_single_test_key_first',
+            args=(self.promo1.id,)
+        )
+
+        key = 'panacea:/api/promo/single/%s/first;;;' % self.promo1.id
+
+        old = settings.PCFG_CACHING['key_defaults']
+        settings.PCFG_CACHING['key_defaults'] = {
+            'GET': [],
+            'META': [],
+            'COOKIES': []
+        }
+
+        self.client.get(url)
+        store_schemes.assert_called_with(key)
+
+        settings.PCFG_CACHING['key_defaults'] = old
+
+    @patch('panacea.engine.CacheEngine.store_schemes')
+    def testOnlyDefaults(self, store_schemes):
+        u"""первый кейс, в составлении ключа
+        не учавствуют никакие параетры
+        """
+        url = reverse(
+            'api_promo_single_test_key_second',
+            args=(self.promo1.id,)
+        )
+
+        key = 'panacea:/api/promo/single/%s/second;default_qs1=&default_qs2=;;' % self.promo1.id
+
+        self.client.get(url)
+        store_schemes.assert_called_with(key)

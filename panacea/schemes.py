@@ -7,6 +7,12 @@ logger = get_logger()
 
 
 class CacheScheme(object):
+    u"""
+    класс предоставляющий методы работы со схемами кеширования
+    """
+
+    # для удобства и сокращения копипаста созданим ссылку
+    # не часть конфига, отвечающую за схемы кеширвоания
     cache_conf = conf.get('PCFG_CACHING')
 
     def __init__(self, scheme):
@@ -30,7 +36,7 @@ class CacheScheme(object):
         полный формат ключа, по умолчанию
         prefix}{path}{querystring_args}{headers}{cookies}
         """
-        separator = conf.get("PCFG_SEPARATOR")
+        separator = conf.get("PCFG_PART_SEPARATOR")
         return "{prefix}{path}%s%s" % (
                 separator,
                 separator.join(
@@ -49,23 +55,24 @@ class CacheScheme(object):
         }
 
         for part in self.key_defaults_order:
-            key_parts[part] = getattr(self, '_generate_part_%s' % part)(request)
+            key_parts[part] = getattr(
+                self, '_generate_part_%s' % part.lower())(request)
 
         return key_parts
 
-    def _generate_part_querystring_args(self, request):
+    def _generate_part_get(self, request):
         u"""
         сформируем часть ключа, основанную на параметрах
         query_string
         """
-        return self._get_part('query_string', request)
+        return self._get_part('GET', request)
 
-    def _generate_part_headers(self, request):
+    def _generate_part_meta(self, request):
         u"""
         сформируем часть ключа, основанную на параметрах
         headers
         """
-        return self._get_part('headers', request)
+        return self._get_part('META', request)
 
 
     def _generate_part_cookies(self, request):
@@ -73,12 +80,29 @@ class CacheScheme(object):
         сформируем часть ключа, основанную на параметрах
         cookies
         """
-        return self._get_part('cookies', request)
+        return self._get_part('COOKIES', request)
 
+
+    def get_part_keys(self, part_type):
+        """
+        кастомные ключи уситывающиеся при
+        составлении части ключа part_type
+        """
+        return self.__scheme.get(part_type, [])
 
     def _get_part(self, part_type, request):
-        part_value = u""
-        return part_value
+        data_dict = getattr(request, part_type)
+        separator = conf.get('PCFG_VALUES_SEPARATOR')
+
+        # cначала идут дефолтные значения, затем
+        # кастомные для данной схемы
+
+        keys = self.cache_conf['key_defaults'].get(part_type, []) + \
+            self.get_part_keys(part_type)
+
+        return separator.join(
+            "%s=%s" % (key, data_dict.get(key, '')) for key in keys
+        )
 
     @property
     def enabled(self):
@@ -119,8 +143,7 @@ class CacheScheme(object):
 
     @classmethod
     def filter_by_alias(cls, alias):
-        logger.debug("filter_by_alias: %s" % alias)
-        """
+        u"""
         поиск конфигурации кеширования по алиасу
         """
         return cls.cache_conf['schemes'].get(alias)

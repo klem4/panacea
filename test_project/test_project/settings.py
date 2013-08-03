@@ -211,24 +211,26 @@ PCFG_CACHING = {
     'key_defaults': {
         # всегда включаем в состав ключа эти ...
         # -"- get-параметра
-        'querystring_args': [],
+        'GET': ['default_qs1', 'default_qs2'],
         # -"- заголовки
-        'headers': [],
+        'META': [],
         # -"- куки
-        'cookies': []
+        'COOKIES': []
     },
     # в каком порядке учитывать блоки значений
     # сначала в ключе пойду параметры query_string(сначала дефолтные
     # в указанном порядке), затем, если указаны, то конкретные для схемы, также
     # в указанном порядке
     # дале по аналогии с остальными блоками: headers, cookies
-    'key_defaults_order': ['querystring_args', 'headers', 'cookies'],
+    'key_defaults_order': ['GET', 'META', 'COOKIES'],
 
     # схемы кеширования
     'schemes': {
         'api_promo_single_empty_scheme': {
         },
         'api_promo_single_test_key_first': {
+        },
+        'api_promo_single_test_key_second': {
         }
     }
 }
