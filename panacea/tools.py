@@ -2,9 +2,6 @@
 from django.conf import settings
 import logging
 
-from panacea import exceptions
-
-
 def _get(_globals, name, **kwargs):
     u"""
     метод для получения значения из конфига
@@ -24,9 +21,6 @@ def _get(_globals, name, **kwargs):
     >>conf.get('SOME_VARIABLE', default={})
     """
 
-    if not isinstance(name, str):
-        raise exceptions.PUsageException('config attribute name must be a string')
-
     try:
         return getattr(settings, name)
     except:
@@ -35,8 +29,6 @@ def _get(_globals, name, **kwargs):
         except KeyError:
             if 'default' in kwargs:
                 return kwargs.get('default')
-
-    raise exceptions.PConfigException(name)
 
 
 def get_logger():
