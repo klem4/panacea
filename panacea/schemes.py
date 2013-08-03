@@ -18,6 +18,60 @@ class CacheScheme(object):
     def __init__(self, alias):
         self.__alias = alias
 
+    @property
+    def scheme(self):
+        """
+        базовое свойство - схема кеширования
+        """
+        return self.cache_conf['schemes'][self.__alias]
+
+    @property
+    def enabled(self):
+        """
+        активна ли данная конфигурация кеширования
+        по умолчанию - да
+        """
+        return self.scheme.get("enabled", True)
+
+    @property
+    def key_defaults_order(self):
+        return self.cache_conf.get("key_defaults_order")
+
+
+    @classmethod
+    def filter(cls, **lookup):
+        """
+        ищет конфигурацию кеширования
+        в конфиге, в случае успеха, инстанцирует и возвращает
+        объект класса CacheScheme
+        """
+        key, value = lookup.popitem()
+        if key == 'alias':
+            alias = value
+        else:
+            filter_name = "filter_by_%s" % key
+
+            _filter = getattr(cls, filter_name)
+            alias = _filter(value)
+
+        if alias is not None and isinstance(cls.cache_conf['schemes'].get(alias), dict):
+            return cls(alias)
+
+    @classmethod
+    def filter_by_request(cls, request):
+        """
+        поиск конфигурации кеширования
+        по объекту django.http.HttpRequest или его наследнику
+        """
+        # получим алиас urlconf по урлу
+        try:
+            urlconf = urlresolvers.resolve(request.path)
+            return urlconf.url_name
+        except urlresolvers.Resolver404:
+            pass
+        except Exception as e:
+            logger.error(e)
+
     def generate_store_key(self, request):
         """
         получить ключ, соответствующий данной схеме,
@@ -103,57 +157,3 @@ class CacheScheme(object):
         return separator.join(
             "%s=%s" % (key, data_dict.get(key, '')) for key in keys
         )
-
-    @property
-    def scheme(self):
-        """
-        базовое свойство - схема кеширования
-        """
-        return self.cache_conf['schemes'][self.__alias]
-
-    @property
-    def enabled(self):
-        """
-        активна ли данная конфигурация кеширования
-        по умолчанию - да
-        """
-        return self.scheme.get("enabled", True)
-
-    @property
-    def key_defaults_order(self):
-        return self.cache_conf.get("key_defaults_order")
-
-
-    @classmethod
-    def filter(cls, **lookup):
-        """
-        ищет конфигурацию кеширования
-        в конфиге, в случае успеха, инстанцирует и возвращает
-        объект класса CacheScheme
-        """
-        key, value = lookup.popitem()
-        if key == 'alias':
-            alias = value
-        else:
-            filter_name = "filter_by_%s" % key
-
-            _filter = getattr(cls, filter_name)
-            alias = _filter(value)
-
-        if alias is not None and isinstance(cls.cache_conf['schemes'].get(alias), dict):
-            return cls(alias)
-
-    @classmethod
-    def filter_by_request(cls, request):
-        """
-        поиск конфигурации кеширования
-        по объекту django.http.HttpRequest или его наследнику
-        """
-        # получим алиас urlconf по урлу
-        try:
-            urlconf = urlresolvers.resolve(request.path)
-            return urlconf.url_name
-        except urlresolvers.Resolver404:
-            pass
-        except Exception as e:
-            logger.error(e)
