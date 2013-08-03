@@ -54,13 +54,31 @@ class CacheScheme(object):
         return key_parts
 
     def _generate_part_querystring_args(self, request):
-        return "qs"
+        u"""
+        сформируем часть ключа, основанную на параметрах
+        query_string
+        """
+        return self._get_part('query_string', request)
 
     def _generate_part_headers(self, request):
-        return "hds"
+        u"""
+        сформируем часть ключа, основанную на параметрах
+        headers
+        """
+        return self._get_part('headers', request)
+
 
     def _generate_part_cookies(self, request):
-        return "cc"
+        u"""
+        сформируем часть ключа, основанную на параметрах
+        cookies
+        """
+        return self._get_part('cookies', request)
+
+
+    def _get_part(self, part_type, request):
+        part_value = u""
+        return part_value
 
     @property
     def enabled(self):

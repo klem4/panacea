@@ -17,7 +17,7 @@ class CacheEngine(object):
         self.response = response
         self.scheme = None
 
-    def store_cache(self):
+    def process_caching(self):
         u"""
         кешируем результат выполнения запроса
         в соответствии с указанной схемой
@@ -26,7 +26,16 @@ class CacheEngine(object):
         # получим ключ, по которому будет
         # сохранен контент ответа api
         panacea_key = self.scheme.generate_store_key(self.request)
-        logger.debug(panacea_key)
+        logger.debug("process_caching: %s" % panacea_key)
+
+        self.store_schemes(panacea_key)
+
+    def store_schemes(self, key):
+        """
+        кешируем конткнт ответа от api под ключем key
+        по всех схемам, описанных в конфиге для данного урла
+        """
+        pass
 
     def allow_caching(self):
         u"""

@@ -20,13 +20,19 @@ urlpatterns = patterns('',
     url(
         r'^api/promo/single/(?P<pk>\d+)/?$',
         views.APIPromoSingleView.as_view(),
-        name='api_promo_single'
+        name='api_promo_single_empty_scheme'
     ),
 
     url(
-        r'^api/promo/single/(?P<pk>\d+)/foo/bar/baz/?$',
+        r'^api/promo/single/(?P<pk>\d+)/not_in_cache/?$',
         views.APIPromoSingleView.as_view(),
         name='api_promo_single_not_in_cache'
+    ),
+
+    url(
+        r'^api/promo/single/(?P<pk>\d+)/?$',
+        views.APIPromoSingleView.as_view(),
+        name='api_promo_single_test_key_0'
     ),
 
     url(

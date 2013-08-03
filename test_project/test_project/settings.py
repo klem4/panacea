@@ -226,8 +226,7 @@ PCFG_CACHING = {
 
     # схемы кеширования
     'schemes': {
-        'api_promo_single': {
-
+        'api_promo_single_empty_scheme': {
         }
     }
 }

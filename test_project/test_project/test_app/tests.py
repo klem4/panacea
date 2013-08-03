@@ -9,6 +9,7 @@ from test_project.test_app import models
 from panacea import config as conf
 
 
+
 class BaseTestCaseMixin(object):
     def setUp(self):
         self.promo1 = models.Promo.objects.create(name='promo1')
@@ -28,7 +29,7 @@ class ApiSmokeTestCases(BaseTestCaseMixin, TestCase):
 
     def test_promo_single_smoke(self):
         response = self.client.get(
-            reverse('api_promo_single', args=(self.promo1.pk,))
+            reverse('api_promo_single_empty_scheme', args=(self.promo1.pk,))
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
@@ -53,13 +54,13 @@ class TestAllowCachingMethods(BaseTestCaseMixin, TestCase):
     """
     def setUp(self):
         super(TestAllowCachingMethods, self).setUp()
-        self.url1 = reverse('api_promo_single', args=(self.promo1.pk,))
+        self.url1 = reverse('api_promo_single_empty_scheme', args=(self.promo1.pk,))
         self.url1_no_cache = reverse(
             'api_promo_single_not_in_cache',
             args=(self.promo1.pk,)
         )
 
-    @patch('panacea.engine.CacheEngine.store_cache')
+    @patch('panacea.engine.CacheEngine.process_caching')
     def testAllPass(self, patched_store):
         """
         по дефолту данный запрос проходит все проверки
@@ -69,7 +70,7 @@ class TestAllowCachingMethods(BaseTestCaseMixin, TestCase):
         self.assertTrue(patched_store.called)
         self.assertEqual(r.status_code, 200)
 
-    @patch('panacea.engine.CacheEngine.store_cache')
+    @patch('panacea.engine.CacheEngine.process_caching')
     def testWrongMethod(self, patched_store):
         """
             проверяем, что не кешируем ответы
@@ -83,7 +84,7 @@ class TestAllowCachingMethods(BaseTestCaseMixin, TestCase):
             _method(self.url1)
             self.assertFalse(patched_store.called)
 
-    @patch('panacea.engine.CacheEngine.store_cache')
+    @patch('panacea.engine.CacheEngine.process_caching')
     @patch('django.http.HttpResponse.status_code')
     def testWrongStatusCode(self, patched_response, patched_store):
         """
@@ -108,7 +109,7 @@ class TestAllowCachingMethods(BaseTestCaseMixin, TestCase):
              self.assertEqual(r.status_code, status)
              self.assertTrue(patched_store.called)
 
-    @patch('panacea.engine.CacheEngine.store_cache')
+    @patch('panacea.engine.CacheEngine.process_caching')
     def testContentType(self, patched_store):
         """
         проверим, что сохраняются только данные заданного формата
@@ -119,7 +120,7 @@ class TestAllowCachingMethods(BaseTestCaseMixin, TestCase):
         self.assertFalse(patched_store.called)
         self.assertEqual(r.status_code, 200)
 
-    @patch('panacea.engine.CacheEngine.store_cache')
+    @patch('panacea.engine.CacheEngine.process_caching')
     def testScheme(self, patched_store):
         """
         данный url отсутствует в схеме кеширования
@@ -128,18 +129,18 @@ class TestAllowCachingMethods(BaseTestCaseMixin, TestCase):
         self.assertEqual(r.status_code, 200)
         self.assertFalse(patched_store.called)
 
-    @patch('panacea.engine.CacheEngine.store_cache')
+    @patch('panacea.engine.CacheEngine.process_caching')
     def testLocalDisabled(self, patched_store):
         from django.conf import settings
-        settings.PCFG_CACHING['schemes']['api_promo_single']['enabled'] = False
+        settings.PCFG_CACHING['schemes']['api_promo_single_empty_scheme']['enabled'] = False
 
         r = self.client.get(self.url1)
         self.assertEqual(r.status_code, 200)
         self.assertFalse(patched_store.called)
 
-        settings.PCFG_CACHING['schemes']['api_promo_single']['enabled'] = True
+        settings.PCFG_CACHING['schemes']['api_promo_single_empty_scheme']['enabled'] = True
 
-    @patch('panacea.engine.CacheEngine.store_cache')
+    @patch('panacea.engine.CacheEngine.process_caching')
     def testGlobalDisabled(self, patched_store):
         from django.conf import settings
         settings.PCFG_ENABLED = False
@@ -149,3 +150,30 @@ class TestAllowCachingMethods(BaseTestCaseMixin, TestCase):
         self.assertFalse(patched_store.called)
 
         settings.PCFG_ENABLED = True
+
+class TestGenerateKey(BaseTestCaseMixin, TestCase):
+    u"""
+    тестируем функцию геренации ключа,
+    по которому произойдет сохранение ответа от api
+    построение ключа, зависит от схемы кеширования,
+    которая указана для урла api
+    """
+    def setUp(self):
+        super(TestGenerateKey, self).setUp()
+
+        self.cases = [
+            (
+                reverse(
+                    'api_promo_single_test_key_0',
+                    args=(self.promo1.id,)
+                ),
+                'panacea:/api/promo/single/%s;;;' % self.promo1.id
+            )
+        ]
+
+
+    @patch('panacea.engine.CacheEngine.store_schemes')
+    def testGenerateKeys(self, store_schemes):
+        for url, key in self.cases:
+            self.client.get(url)
+            store_schemes.assert_called_with(key)
