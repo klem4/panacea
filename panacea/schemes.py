@@ -15,8 +15,8 @@ class CacheScheme(object):
     # не часть конфига, отвечающую за схемы кеширвоания
     cache_conf = conf.get('PCFG_CACHING')
 
-    def __init__(self, scheme):
-        self.__scheme = scheme
+    def __init__(self, alias):
+        self.__alias = alias
 
     def generate_store_key(self, request):
         """
@@ -88,7 +88,7 @@ class CacheScheme(object):
         кастомные ключи уситывающиеся при
         составлении части ключа part_type
         """
-        return self.__scheme.get(part_type, [])
+        return self.scheme.get(part_type, [])
 
     def _get_part(self, part_type, request):
         data_dict = getattr(request, part_type)
@@ -105,12 +105,19 @@ class CacheScheme(object):
         )
 
     @property
+    def scheme(self):
+        """
+        базовое свойство - схема кеширования
+        """
+        return self.cache_conf['schemes'][self.__alias]
+
+    @property
     def enabled(self):
         """
         активна ли данная конфигурация кеширования
         по умолчанию - да
         """
-        return self.__scheme.get("enabled", True)
+        return self.scheme.get("enabled", True)
 
     @property
     def key_defaults_order(self):
@@ -125,28 +132,16 @@ class CacheScheme(object):
         объект класса CacheScheme
         """
         key, value = lookup.popitem()
-        filter_name = "filter_by_%s" % key
+        if key == 'alias':
+            alias = value
+        else:
+            filter_name = "filter_by_%s" % key
 
-        _filter = getattr(cls, filter_name)
-        scheme_dict = _filter(value)
+            _filter = getattr(cls, filter_name)
+            alias = _filter(value)
 
-        if scheme_dict is not None:
-            return cls(scheme_dict)
-
-
-    @classmethod
-    def scheme_dict_valid(cls, scheme_dict):
-        if not isinstance(scheme_dict, dict):
-            return False
-
-        return True
-
-    @classmethod
-    def filter_by_alias(cls, alias):
-        u"""
-        поиск конфигурации кеширования по алиасу
-        """
-        return cls.cache_conf['schemes'].get(alias)
+        if alias is not None and isinstance(cls.cache_conf['schemes'].get(alias), dict):
+            return cls(alias)
 
     @classmethod
     def filter_by_request(cls, request):
@@ -154,15 +149,11 @@ class CacheScheme(object):
         поиск конфигурации кеширования
         по объекту django.http.HttpRequest или его наследнику
         """
-        from django.http import HttpRequest
-
         # получим алиас urlconf по урлу
         try:
             urlconf = urlresolvers.resolve(request.path)
+            return urlconf.url_name
         except urlresolvers.Resolver404:
-            return
+            pass
         except Exception as e:
             logger.error(e)
-            return
-
-        return cls.filter_by_alias(urlconf.url_name)

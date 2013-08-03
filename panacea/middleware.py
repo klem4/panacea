@@ -16,11 +16,7 @@ class NginxRedisCachingMiddleware(object):
     """
 
     def process_response(self, request, response):
-        try:
-            engine = CacheEngine(request, response)
-            if engine.allow_caching():
-                engine.process_caching()
-        except Exception as e:
-            logger.error("Unhandled error[%s]: %s" % (e.__class__, e.message))
-
+        engine = CacheEngine(request, response)
+        if engine.allow_caching():
+            engine.process_caching()
         return response
