@@ -23,7 +23,7 @@ PCFG_ENABLED = False
 PCFG_KEY_PREFIX = 'panacea:'
 
 # разделитель частей ключа
-PCFG_SEPARATOR = '__'
+PCFG_SEPARATOR = ';'
 
 # имя логгера по умолчанию
 # если значение на задать, будет использован
