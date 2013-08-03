@@ -119,6 +119,7 @@ class CacheScheme(object):
 
     @classmethod
     def filter_by_alias(cls, alias):
+        logger.debug("filter_by_alias: %s" % alias)
         """
         поиск конфигурации кеширования по алиасу
         """

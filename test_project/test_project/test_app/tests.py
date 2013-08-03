@@ -162,12 +162,15 @@ class TestGenerateKey(BaseTestCaseMixin, TestCase):
         super(TestGenerateKey, self).setUp()
 
         self.cases = [
+            # первый кейс, в составлении ключа
+            # не учавствуют никакие параетры
+
             (
                 reverse(
-                    'api_promo_single_test_key_0',
+                    'api_promo_single_test_key_first',
                     args=(self.promo1.id,)
                 ),
-                'panacea:/api/promo/single/%s;;;' % self.promo1.id
+                'panacea:/api/promo/single/%s/first;;;' % self.promo1.id
             )
         ]
 
