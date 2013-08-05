@@ -179,7 +179,7 @@ class TestGenerateKey(BaseTestCaseMixin, TestCase):
 
     @patch('panacea.engine.CacheEngine.store_schemes')
     def testAllPartsEmpty(self, store_schemes):
-        u"""первый кейс, в составлении ключа
+        u"""в составлении ключа
         не учавствуют никакие параетры
         """
         url = reverse(
@@ -196,22 +196,79 @@ class TestGenerateKey(BaseTestCaseMixin, TestCase):
             'COOKIES': []
         }
 
-        self.client.get(url)
+        r = self.client.get(url)
+        self.assertEqual(r.status_code, 200)
+
         store_schemes.assert_called_with(key)
 
         settings.PCFG_CACHING['key_defaults'] = old
 
     @patch('panacea.engine.CacheEngine.store_schemes')
-    def testOnlyDefaults(self, store_schemes):
-        u"""первый кейс, в составлении ключа
-        не учавствуют никакие параетры
+    def testOnlyDefaults1(self, store_schemes):
+        u"""в составлении ключа
+        не учавствуют только дефолтные параметры
         """
         url = reverse(
             'api_promo_single_test_key_second',
             args=(self.promo1.id,)
-        )
+        ) + '?default_qs1=value1&default_qs2=value2'
 
-        key = 'panacea:/api/promo/single/%s/second;default_qs1=&default_qs2=;;' % self.promo1.id
+        key = 'panacea:/api/promo/single/%s/second;default_qs1=value1&default_qs2=value2;;' % self.promo1.id
 
-        self.client.get(url)
+        r = self.client.get(url)
+        self.assertEqual(r.status_code, 200)
         store_schemes.assert_called_with(key)
+
+    @patch('panacea.engine.CacheEngine.store_schemes')
+    def testOnlyDefaults2(self, store_schemes):
+        u"""
+        то же самое, что и предыдущий кейс,
+        но параметры в запросе идут в другом порядку
+        """
+
+        url = reverse(
+            'api_promo_single_test_key_second',
+            args=(self.promo1.id,)
+        ) + '?default_qs2=value2&default_qs1=value1'
+
+        key = 'panacea:/api/promo/single/%s/second;default_qs1=value1&default_qs2=value2;;' % self.promo1.id
+
+        r = self.client.get(url)
+        self.assertEqual(r.status_code, 200)
+        store_schemes.assert_called_with(key)
+
+    @patch('panacea.engine.CacheEngine.store_schemes')
+    def testUnknownQsArgs(self, store_schemes):
+        """
+        добавляем к преыдущему варианту неизвестные
+        для схемы параметры, они не дают никакого эффекта
+        """
+        url = reverse(
+            'api_promo_single_test_key_second',
+            args=(self.promo1.id,)
+        ) + '?default_qs2=value2&default_qs1=value1&x=1&y=2'
+
+        key = 'panacea:/api/promo/single/%s/second;default_qs1=value1&default_qs2=value2;;' % self.promo1.id
+
+        r = self.client.get(url)
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.status_code, 200)
+
+        store_schemes.assert_called_with(key)
+
+    # @patch('panacea.engine.CacheEngine.store_schemes')
+    # def testDefaultHeaders(self, store_schemes):
+    #     """
+    #     в схеме учавствуют только дефолтные
+    #     заголовки
+    #     """
+    #     url = reverse(
+    #         'api_promo_single_test_key_third',
+    #         args=(self.promo1.id,)
+    #     ) + '?default_qs2=value2&default_qs1=value1&x=1&y=2'
+    #
+    #     key = 'panacea:/api/promo/single/%s/second;;;' % self.promo1.id
+    #     r = self.client.get(url)
+    #     self.assertEqual(r.status_code, 200)
+    #     store_schemes.assert_called_with(key)
+
