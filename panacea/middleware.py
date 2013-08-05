@@ -16,6 +16,7 @@ class NginxRedisCachingMiddleware(object):
     """
 
     def process_response(self, request, response):
+        #import pdb; pdb.set_trace()
         engine = CacheEngine(request, response)
         if engine.allow_caching():
             engine.process_caching()

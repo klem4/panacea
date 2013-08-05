@@ -213,7 +213,7 @@ PCFG_CACHING = {
         # -"- get-параметра
         'GET': ['default_qs1', 'default_qs2'],
         # -"- заголовки
-        'META': [],
+        'META': ['HTTP_USER_AGENT', 'HTTP_ACCEPT_ENCODING'],
         # -"- куки
         'COOKIES': []
     },
