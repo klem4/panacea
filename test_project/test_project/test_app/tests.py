@@ -310,3 +310,67 @@ class TestGenerateKey(BaseTestCaseMixin, TestCase):
         self.assertEqual(r.status_code, 200)
 
         store_schemes.assert_called_with(key)
+
+    @patch('panacea.engine.CacheEngine.store_schemes')
+    def testEmptyCustomValues(self, store_schemes):
+        """
+        тут испльзуем другую схему кешироваия, в ней учитываются
+        кастомные параметры qs, cookie, header,  но все они пустые
+        """
+        url = reverse(
+            'api_promo_single_test_key_third',
+            args=(self.promo1.id,)
+        ) + '?default_qs2=value2&default_qs1=value1&x=1&y=2&custom_qs1=xxx'
+
+        key = 'panacea:/api/promo/single/%s/third;' \
+              'default_qs1=value1&default_qs2=value2&custom_qs1=xxx;' \
+              'HTTP_USER_AGENT=some/user/agent&HTTP_ACCEPT_ENCODING=some/encoding' \
+              '&HTTP_CUSTOM_META=custom_meta_value;' \
+              'some_cookie1=cookie_value1&some_cookie2=cookie_value2' \
+              '&custom_cookie=yyy' % self.promo1.id
+
+        self.client.cookies['some_cookie1'] = 'cookie_value1'
+        self.client.cookies['some_cookie2'] = 'cookie_value2'
+        self.client.cookies['custom_cookie'] = 'yyy'
+
+
+
+        r = self.client.get(url, **{
+            'HTTP_USER_AGENT': 'some/user/agent',
+            'HTTP_ACCEPT_ENCODING': 'some/encoding',
+            'HTTP_CUSTOM_META': 'custom_meta_value'
+        })
+
+        self.assertEqual(r.status_code, 200)
+
+        store_schemes.assert_called_with(key)
+
+    @patch('panacea.engine.CacheEngine.store_schemes')
+    def testNonEmptyCustomValues(self, store_schemes):
+        """
+        аналогично предыдущему тесты, но все кастомные значения заданы
+        """
+        url = reverse(
+            'api_promo_single_test_key_third',
+            args=(self.promo1.id,)
+        ) + '?default_qs2=value2&default_qs1=value1&x=1&y=2'
+
+        key = 'panacea:/api/promo/single/%s/third;' \
+              'default_qs1=value1&default_qs2=value2&custom_qs1=;' \
+              'HTTP_USER_AGENT=some/user/agent&HTTP_ACCEPT_ENCODING=some/encoding' \
+              '&HTTP_CUSTOM_META=;' \
+              'some_cookie1=cookie_value1&some_cookie2=cookie_value2' \
+              '&custom_cookie=' % self.promo1.id
+
+        self.client.cookies['some_cookie1'] = 'cookie_value1'
+        self.client.cookies['some_cookie2'] = 'cookie_value2'
+
+
+        r = self.client.get(url, **{
+            'HTTP_USER_AGENT': 'some/user/agent',
+            'HTTP_ACCEPT_ENCODING': 'some/encoding'
+        })
+
+        self.assertEqual(r.status_code, 200)
+
+        store_schemes.assert_called_with(key)

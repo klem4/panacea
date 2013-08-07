@@ -231,6 +231,11 @@ PCFG_CACHING = {
         'api_promo_single_test_key_first': {
         },
         'api_promo_single_test_key_second': {
+        },
+        'api_promo_single_test_key_third': {
+            'GET': ['custom_qs1'],
+            'META': ['HTTP_CUSTOM_META'],
+            'COOKIES': ['custom_cookie']
         }
     }
 }

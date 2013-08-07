@@ -42,6 +42,12 @@ urlpatterns = patterns('',
     ),
 
     url(
+        r'^api/promo/single/(?P<pk>\d+)/third/?$',
+        views.APIPromoSingleView.as_view(),
+        name='api_promo_single_test_key_third'
+    ),
+
+    url(
         r'^api/promo/list/?$',
         views.APIPromoListView.as_view(),
         name='api_promo_list'
