@@ -283,3 +283,30 @@ class TestGenerateKey(BaseTestCaseMixin, TestCase):
         self.assertEqual(r.status_code, 200)
 
         store_schemes.assert_called_with(key)
+
+    @patch('panacea.engine.CacheEngine.store_schemes')
+    def testNonEmptyCookies(self, store_schemes):
+        """
+        добавляем к преыдущему варианту непустые куки
+        """
+        url = reverse(
+            'api_promo_single_test_key_second',
+            args=(self.promo1.id,)
+        ) + '?default_qs2=value2&default_qs1=value1&x=1&y=2'
+
+        key = 'panacea:/api/promo/single/%s/second;default_qs1=value1&default_qs2=value2;' \
+              'HTTP_USER_AGENT=some/user/agent&HTTP_ACCEPT_ENCODING=some/encoding;' \
+              'some_cookie1=cookie_value1&some_cookie2=cookie_value2' % self.promo1.id
+
+        self.client.cookies['some_cookie1'] = 'cookie_value1'
+        self.client.cookies['some_cookie2'] = 'cookie_value2'
+
+
+        r = self.client.get(url, **{
+            'HTTP_USER_AGENT': 'some/user/agent',
+            'HTTP_ACCEPT_ENCODING': 'some/encoding'
+        })
+
+        self.assertEqual(r.status_code, 200)
+
+        store_schemes.assert_called_with(key)
