@@ -214,7 +214,8 @@ class TestGenerateKey(BaseTestCaseMixin, TestCase):
         ) + '?default_qs1=value1&default_qs2=value2'
 
         key = 'panacea:/api/promo/single/%s/second;default_qs1=value1&default_qs2=value2;' \
-              'HTTP_USER_AGENT=&HTTP_ACCEPT_ENCODING=;' % self.promo1.id
+              'HTTP_USER_AGENT=&HTTP_ACCEPT_ENCODING=;' \
+              'some_cookie1=&some_cookie2=' % self.promo1.id
 
         r = self.client.get(url)
         self.assertEqual(r.status_code, 200)
@@ -233,7 +234,8 @@ class TestGenerateKey(BaseTestCaseMixin, TestCase):
         ) + '?default_qs2=value2&default_qs1=value1'
 
         key = 'panacea:/api/promo/single/%s/second;default_qs1=value1&default_qs2=value2;' \
-              'HTTP_USER_AGENT=&HTTP_ACCEPT_ENCODING=;' % self.promo1.id
+              'HTTP_USER_AGENT=&HTTP_ACCEPT_ENCODING=;' \
+              'some_cookie1=&some_cookie2=' % self.promo1.id
 
         r = self.client.get(url)
         self.assertEqual(r.status_code, 200)
@@ -251,7 +253,8 @@ class TestGenerateKey(BaseTestCaseMixin, TestCase):
         ) + '?default_qs2=value2&default_qs1=value1&x=1&y=2'
 
         key = 'panacea:/api/promo/single/%s/second;default_qs1=value1&default_qs2=value2;' \
-              'HTTP_USER_AGENT=&HTTP_ACCEPT_ENCODING=;' % self.promo1.id
+              'HTTP_USER_AGENT=&HTTP_ACCEPT_ENCODING=;' \
+              'some_cookie1=&some_cookie2=' % self.promo1.id
 
         r = self.client.get(url)
         self.assertEqual(r.status_code, 200)
@@ -269,7 +272,8 @@ class TestGenerateKey(BaseTestCaseMixin, TestCase):
         ) + '?default_qs2=value2&default_qs1=value1&x=1&y=2'
 
         key = 'panacea:/api/promo/single/%s/second;default_qs1=value1&default_qs2=value2;' \
-              'HTTP_USER_AGENT=some/user/agent&HTTP_ACCEPT_ENCODING=some/encoding;' % self.promo1.id
+              'HTTP_USER_AGENT=some/user/agent&HTTP_ACCEPT_ENCODING=some/encoding;' \
+              'some_cookie1=&some_cookie2=' % self.promo1.id
 
         r = self.client.get(url, **{
             'HTTP_USER_AGENT': 'some/user/agent',

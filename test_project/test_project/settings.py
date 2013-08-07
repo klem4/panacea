@@ -215,7 +215,7 @@ PCFG_CACHING = {
         # -"- заголовки
         'META': ['HTTP_USER_AGENT', 'HTTP_ACCEPT_ENCODING'],
         # -"- куки
-        'COOKIES': []
+        'COOKIES': ['some_cookie1', 'some_cookie2']
     },
     # в каком порядке учитывать блоки значений
     # сначала в ключе пойду параметры query_string(сначала дефолтные
