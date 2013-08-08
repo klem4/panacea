@@ -30,20 +30,26 @@ class CacheEngine(object):
 
         self.store_schemes(panacea_key)
 
-    def store_schemes(self, key):
+    def store_schemes(self, _key):
         """
         кешируем конткнт ответа от api под ключем key
         по всех схемам, описанных в конфиге для данного урла
         """
         # контент, который будем сохранять
-        content = self.response.content
+        _content = self.response.content
 
         # пройдем по списку всех моделей,
         # которые связаны с данной схемой кеширования
         for model_conf in self.scheme.model_confs:
             # время жизни ключа для данной модели в рамках схемы
+
             cache_conf = CacheConf(model_conf)
 
+            _ttl = self.scheme.ttl
+            _model = cache_conf.model
+            _dnf = cache_conf._dnf
+
+            tools.cache_thing(_model, _key, _content , _dnf, _ttl)
 
     def allow_caching(self):
         u"""

@@ -10,12 +10,8 @@ class CacheConf(object):
     класс, описывающий информацию о том,
     как надо кешировать модель, связанную с данным конфигом
     """
-    def __init__(self, cache_conf):
-        self.cache_conf = cache_conf
-
-    @property
-    def ttl(self):
-        pass
+    def __init__(self, model_conf):
+        self.model_conf = model_conf
 
     @property
     def model(self):
@@ -25,7 +21,7 @@ class CacheConf(object):
     def _dnf(self):
         pass
 
-    def get_cachedas_queryset(self):
+    def get_cached_queryset(self):
         pass
 
 
@@ -55,6 +51,13 @@ class CacheScheme(object):
         по умолчанию - да
         """
         return self.scheme.get("enabled", True)
+
+    @property
+    def ttl(self):
+        return int(self.cache_conf.get(
+            'ttl',
+            conf.get('PCFG_DEFAULT_TTL')
+        ))
 
     @property
     def model_confs(self):
