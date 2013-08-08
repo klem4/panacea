@@ -41,14 +41,16 @@ class CacheEngine(object):
         # пройдем по списку всех моделей,
         # которые связаны с данной схемой кеширования
         for model_conf in self.scheme.model_confs:
-            # время жизни ключа для данной модели в рамках схемы
-
             cache_conf = CacheConf(model_conf)
 
+            # время жизни ключа для данной модели в рамках схемы
             _ttl = self.scheme.ttl
+            # модель, к которой привязываем инвалидацию
             _model = cache_conf.model
+            # dnf на основании query-set модели, на котором основываем валидацию
             _dnf = cache_conf._dnf
 
+            # сохраняем данные в redis!
             tools.cache_thing(_model, _key, _content , _dnf, _ttl)
 
     def allow_caching(self):
