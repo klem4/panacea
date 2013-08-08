@@ -16,6 +16,7 @@ def resolve_path(request):
     except Exception as e:
         get_logger().error(e)
 
+
 def cache_thing(model, cache_key, data, cond_dnf=[[]], timeout=None):
     u"""
         По факту - скопированный метод cache_thing из кешопса

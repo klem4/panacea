@@ -1,10 +1,10 @@
 # coding: utf-8
 
 import panacea.config as conf
-from panacea.schemes import CacheScheme
-from panacea.tools import get_logger
+from panacea.schemes import CacheScheme, CacheConf
+from panacea import tools
 
-logger = get_logger()
+logger = tools.get_logger()
 
 
 class CacheEngine(object):
@@ -35,7 +35,15 @@ class CacheEngine(object):
         кешируем конткнт ответа от api под ключем key
         по всех схемам, описанных в конфиге для данного урла
         """
-        pass
+        # контент, который будем сохранять
+        content = self.response.content
+
+        # пройдем по списку всех моделей,
+        # которые связаны с данной схемой кеширования
+        for model_conf in self.scheme.model_confs:
+            # время жизни ключа для данной модели в рамках схемы
+            cache_conf = CacheConf(model_conf)
+
 
     def allow_caching(self):
         u"""

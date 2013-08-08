@@ -5,6 +5,30 @@ from panacea import tools
 logger = tools.get_logger()
 
 
+class CacheConf(object):
+    """
+    класс, описывающий информацию о том,
+    как надо кешировать модель, связанную с данным конфигом
+    """
+    def __init__(self, cache_conf):
+        self.cache_conf = cache_conf
+
+    @property
+    def ttl(self):
+        pass
+
+    @property
+    def model(self):
+        pass
+
+    @property
+    def _dnf(self):
+        pass
+
+    def get_cachedas_queryset(self):
+        pass
+
+
 class CacheScheme(object):
     u"""
     класс предоставляющий методы работы со схемами кеширования
@@ -31,6 +55,14 @@ class CacheScheme(object):
         по умолчанию - да
         """
         return self.scheme.get("enabled", True)
+
+    @property
+    def model_confs(self):
+        """
+        список конфигов кеширования моделей,
+        которые связанны с данной схемой
+        """
+        return self.scheme.get("models", [])
 
     @property
     def key_defaults_order(self):
