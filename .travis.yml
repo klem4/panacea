@@ -4,9 +4,11 @@ python:
   - "2.7"
 
 env:
-  - DJANGO="django==1.4.3 --use-mirrors"
-  - DJANGO="django==1.5.1 --use-mirrors"
-  - CI_ENABLED="1"
+  matrix:
+    - DJANGO="django==1.4.3 --use-mirrors"
+    - DJANGO="django==1.5.1 --use-mirrors"
+  global:
+    - CI_ENABLED="1"
 
 install:
   - pip install $DJANGO
