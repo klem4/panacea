@@ -1,9 +1,8 @@
 # coding: utf-8
-from django.core import urlresolvers
 from panacea import config as conf
-from panacea.tools import get_logger
+from panacea import tools
 
-logger = get_logger()
+logger = tools.get_logger()
 
 
 class CacheScheme(object):
@@ -64,13 +63,10 @@ class CacheScheme(object):
         по объекту django.http.HttpRequest или его наследнику
         """
         # получим алиас urlconf по урлу
-        try:
-            urlconf = urlresolvers.resolve(request.path)
+        urlconf = tools.resolve_path(request)
+        if urlconf:
             return urlconf.url_name
-        except urlresolvers.Resolver404:
-            pass
-        except Exception as e:
-            logger.error(e)
+
 
     def generate_store_key(self, request):
         """

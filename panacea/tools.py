@@ -1,6 +1,18 @@
 # coding: utf-8
+
 from django.conf import settings
+from django.core import urlresolvers
+
 import logging
+
+def resolve_path(request):
+    try:
+      return urlresolvers.resolve(request.path)
+    except urlresolvers.Resolver404:
+        pass
+    except Exception as e:
+        get_logger().error(e)
+
 
 def _get(_globals, name, **kwargs):
     u"""
