@@ -1,14 +1,15 @@
 # coding: utf-8
+import os
 
 from mock import patch, Mock
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.utils import simplejson
+from django.utils.unittest import skipIf
 from django.conf import settings
 
 from test_project.test_app import models
 from panacea import config as conf
-
 
 
 class BaseTestCaseMixin(object):
@@ -21,6 +22,15 @@ class BaseTestCaseMixin(object):
 
     def load(self, response):
         return simplejson.loads(response.content)
+
+
+class CacheConfTestCase(BaseTestCaseMixin, TestCase):
+    """
+    проверяем работоспособность класса CacheConf
+    """
+    @skipIf(bool(os.environ.get('CI_ENABLED')), "skin in travis CI")
+    def testMe(self):
+        self.fail('Not Implemented')
 
 
 class ApiSmokeTestCases(BaseTestCaseMixin, TestCase):
