@@ -1,4 +1,7 @@
 # coding: utf-8
+from cacheops.invalidation import cache_schemes, conj_cache_key
+from cacheops.utils import conj_scheme, non_proxy
+from cacheops.conf import model_profile, redis_client
 
 from django.conf import settings
 from django.core import urlresolvers
@@ -12,6 +15,46 @@ def resolve_path(request):
         pass
     except Exception as e:
         get_logger().error(e)
+
+def cache_thing(model, cache_key, data, cond_dnf=[[]], timeout=None):
+    u"""
+        По факту - скопированный метод cache_thing из кешопса
+            с двумя изменениями:
+                - просто функция, а не метод объекта
+                - убрана сериализация data с помощью pickle.dumps
+    """
+
+    model = non_proxy(model)
+
+    if timeout is None:
+        profile = model_profile(model)
+        timeout = profile['timeout']
+
+    # Ensure that all schemes of current query are "known"
+    schemes = map(conj_scheme, cond_dnf)
+    cache_schemes.ensure_known(model, schemes)
+
+    txn = redis_client.pipeline()
+
+    # Write data to cache
+    if timeout is not None:
+        txn.setex(cache_key, data, timeout)
+    else:
+        txn.set(cache_key, data)
+
+    # Add new cache_key to list of dependencies for
+    # every conjunction in dnf
+    for conj in cond_dnf:
+        conj_key = conj_cache_key(model, conj)
+        txn.sadd(conj_key, cache_key)
+        if timeout is not None:
+            # Invalidator timeout should be larger than
+            # timeout of any key it references
+            # So we take timeout from profile which is our upper limit
+            # Add few extra seconds to be extra safe
+            txn.expire(conj_key, model._cacheprofile['timeout'] + 10)
+
+    txn.execute()
 
 
 def _get(_globals, name, **kwargs):
