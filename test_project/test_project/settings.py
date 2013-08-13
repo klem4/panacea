@@ -236,6 +236,16 @@ PCFG_CACHING = {
             'GET': ['custom_qs1'],
             'META': ['HTTP_CUSTOM_META'],
             'COOKIES': ['custom_cookie']
+        },
+        'api_promo_single_cache1': {
+            'GET': ['custom_qs1'],
+            'META': ['HTTP_CUSTOM_META'],
+            'COOKIES': ['custom_cookie'],
+            'models': [
+                {
+                    'model': 'test_app.Promo'
+                }
+            ]
         }
     }
 }

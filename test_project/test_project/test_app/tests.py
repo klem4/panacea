@@ -28,9 +28,9 @@ class CacheConfTestCase(BaseTestCaseMixin, TestCase):
     """
     проверяем работоспособность класса CacheConf
     """
-    @skipIf(bool(os.environ.get('CI_ENABLED')), "skin in travis CI")
+    @skipIf(True, "NOT IMPLEMENTED")
     def testMe(self):
-        self.fail('Not Implemented')
+        pass
 
 
 class ApiSmokeTestCases(BaseTestCaseMixin, TestCase):
@@ -161,6 +161,7 @@ class TestAllowCachingMethods(BaseTestCaseMixin, TestCase):
         self.assertFalse(patched_store.called)
 
         settings.PCFG_ENABLED = True
+
 
 class TestGenerateKey(BaseTestCaseMixin, TestCase):
     u"""
@@ -384,3 +385,17 @@ class TestGenerateKey(BaseTestCaseMixin, TestCase):
         self.assertEqual(r.status_code, 200)
 
         store_schemes.assert_called_with(key)
+
+
+class TestCaching(BaseTestCaseMixin, TestCase):
+    """
+    тестируем правильность сохранения данных в редис
+    """
+    @patch('panacea.tools.cache_thing')
+    def test1(self, patched_cache_thing):
+        url = reverse('api_promo_single_cache1',
+                      args=(self.promo1.id,))
+
+        r = self.client.get(url)
+        self.assertEqual(r.status_code, 200)
+        self.assertTrue(patched_cache_thing.called)
