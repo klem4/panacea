@@ -1,6 +1,8 @@
 # coding: utf-8
 from django.contrib.contenttypes.models import ContentType
 
+from cacheops.utils import dnf
+
 from panacea import config as conf
 from panacea import tools
 
@@ -12,23 +14,38 @@ class CacheConf(object):
     класс, описывающий информацию о том,
     как надо кешировать модель, связанную с данным конфигом
     """
-    def __init__(self, model_conf):
+    def __init__(self, model_conf, urlconf):
         self.model_conf = model_conf
+        self.urlconf = urlconf
+        self.__model = None
 
     @property
     def model(self):
-        (app_label, model) = self.model_conf['model'].split('.')
-        return ContentType.objects.get(
-                app_label=app_label, model=model
-            ).model_class()
+        if not self.__model:
+            (app_label, model) = self.model_conf['model'].split('.')
+            self.__model =  ContentType.objects.get(
+                    app_label=app_label, model=model
+                ).model_class()
+        return self.__model
+
+    @property
+    def queryset_conditions(self):
+        return self.model_conf.get('queryset_conditions', {})
 
     @property
     def _dnf(self):
-        pass
+        qs = self.get_cached_queryset()
+        return dnf(qs)
 
     def get_cached_queryset(self):
-        pass
+        qs = self.model.objects.all()
+        filter_cond = {}
+        for model_field, lookup_field in self.queryset_conditions.items():
+            filter_cond[model_field] = self.urlconf.kwargs[lookup_field]
 
+        if filter_cond:
+            qs = qs.filter(**filter_cond)
+        return qs
 
 class CacheScheme(object):
     u"""

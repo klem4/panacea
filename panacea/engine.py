@@ -15,6 +15,7 @@ class CacheEngine(object):
     def __init__(self, request, response):
         self.request = request
         self.response = response
+        self.urlconf = tools.resolve_path(request)
         self.scheme = None
 
     def process_caching(self):
@@ -41,7 +42,7 @@ class CacheEngine(object):
         # пройдем по списку всех моделей,
         # которые связаны с данной схемой кеширования
         for model_conf in self.scheme.model_confs:
-            cache_conf = CacheConf(model_conf)
+            cache_conf = CacheConf(model_conf, self.urlconf)
 
             # время жизни ключа для данной модели в рамках схемы
             _ttl = self.scheme.ttl

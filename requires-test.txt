@@ -1,1 +1,2 @@
 mock
+https://github.com/klem4/mockredis/archive/master.zip

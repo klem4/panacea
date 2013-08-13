@@ -2,6 +2,8 @@
 import os
 
 from mock import patch, Mock
+from mockredis import mock_redis_client
+
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.utils import simplejson
@@ -11,9 +13,13 @@ from django.conf import settings
 from test_project.test_app import models
 from panacea import config as conf
 
+from redis import Redis
+from django.conf import settings
 
 class BaseTestCaseMixin(object):
     def setUp(self):
+        self.redis = Redis(**settings.CACHEOPS_REDIS)
+        self.redis.flushall()
         self.promo1 = models.Promo.objects.create(name='promo1')
         self.promo2 = models.Promo.objects.create(name='promo2')
 
@@ -387,12 +393,19 @@ class TestGenerateKey(BaseTestCaseMixin, TestCase):
         store_schemes.assert_called_with(key)
 
 
+@patch('cacheops.conf.redis_client', mock_redis_client())
 class TestCaching(BaseTestCaseMixin, TestCase):
     """
     тестируем правильность сохранения данных в редис
     """
     @patch('panacea.tools.cache_thing')
     def test1(self, patched_cache_thing):
+        """
+        тут проверяем, что cached_as вызывается с правильными
+        параметрами
+        """
+        self.redis.flushall()
+
         url = reverse('api_promo_single_cache1',
                       args=(self.promo1.id,))
 
@@ -407,7 +420,7 @@ class TestCaching(BaseTestCaseMixin, TestCase):
 
         _content = '{"id": %s, "name": "promo1"}' % self.promo1.id
         _ttl = 600
-        _dnf = None
+        _dnf = [[('id', 19)]]
 
         patched_cache_thing.assert_called_with(
             _model,

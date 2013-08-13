@@ -6,4 +6,4 @@ __version__ = '.'.join(map(str, VERSION))
 
 from django.conf import settings
 if settings.DEBUG:
-    print "DEBUG: panacea %s" % __version__
+    print "DEBUG: %s" % __version__
