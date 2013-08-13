@@ -398,4 +398,21 @@ class TestCaching(BaseTestCaseMixin, TestCase):
 
         r = self.client.get(url)
         self.assertEqual(r.status_code, 200)
+
         self.assertTrue(patched_cache_thing.called)
+        _model = models.Promo
+        _key = 'panacea:/api/promo/single/19/cache1;default_qs1=&default_qs2=&custom_qs1=;' \
+               'HTTP_USER_AGENT=&HTTP_ACCEPT_ENCODING=&HTTP_CUSTOM_META=;' \
+               'some_cookie1=&some_cookie2=&custom_cookie='
+
+        _content = '{"id": %s, "name": "promo1"}' % self.promo1.id
+        _ttl = 600
+        _dnf = None
+
+        patched_cache_thing.assert_called_with(
+            _model,
+            _key,
+            _content,
+            _dnf,
+            _ttl
+        )

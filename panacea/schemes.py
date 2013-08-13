@@ -1,4 +1,6 @@
 # coding: utf-8
+from django.contrib.contenttypes.models import ContentType
+
 from panacea import config as conf
 from panacea import tools
 
@@ -15,7 +17,10 @@ class CacheConf(object):
 
     @property
     def model(self):
-        pass
+        (app_label, model) = self.model_conf['model'].split('.')
+        return ContentType.objects.get(
+                app_label=app_label, model=model
+            ).model_class()
 
     @property
     def _dnf(self):
