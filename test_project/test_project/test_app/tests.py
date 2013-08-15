@@ -414,13 +414,13 @@ class TestCaching(BaseTestCaseMixin, TestCase):
 
         self.assertTrue(patched_cache_thing.called)
         _model = models.Promo
-        _key = 'panacea:/api/promo/single/19/cache1;default_qs1=&default_qs2=&custom_qs1=;' \
+        _key = 'panacea:/api/promo/single/%s/cache1;default_qs1=&default_qs2=&custom_qs1=;' \
                'HTTP_USER_AGENT=&HTTP_ACCEPT_ENCODING=&HTTP_CUSTOM_META=;' \
-               'some_cookie1=&some_cookie2=&custom_cookie='
+               'some_cookie1=&some_cookie2=&custom_cookie=' % self.promo1.id
 
         _content = '{"id": %s, "name": "promo1"}' % self.promo1.id
         _ttl = 600
-        _dnf = [[('id', 19)]]
+        _dnf = [[('id', self.promo1.id)]]
 
         patched_cache_thing.assert_called_with(
             _model,
