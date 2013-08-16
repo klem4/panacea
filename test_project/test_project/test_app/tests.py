@@ -16,10 +16,11 @@ from panacea import config as conf
 from redis import Redis
 from django.conf import settings
 
+@patch('cacheops.conf.redis_client', mock_redis_client())
 class BaseTestCaseMixin(object):
     def setUp(self):
-        self.redis = Redis(**settings.CACHEOPS_REDIS)
-        self.redis.flushall()
+        self.redis = mock_redis_client()
+        self.redis.flushdb()
         self.promo1 = models.Promo.objects.create(name='promo1')
         self.promo2 = models.Promo.objects.create(name='promo2')
 
@@ -393,7 +394,6 @@ class TestGenerateKey(BaseTestCaseMixin, TestCase):
         store_schemes.assert_called_with(key)
 
 
-@patch('cacheops.conf.redis_client', mock_redis_client())
 class TestCaching(BaseTestCaseMixin, TestCase):
     """
     тестируем правильность сохранения данных в редис
@@ -404,7 +404,7 @@ class TestCaching(BaseTestCaseMixin, TestCase):
         тут проверяем, что cached_as вызывается с правильными
         параметрами
         """
-        self.redis.flushall()
+        self.redis.flushdb()
 
         url = reverse('api_promo_single_cache1',
                       args=(self.promo1.id,))
