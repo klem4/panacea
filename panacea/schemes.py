@@ -60,11 +60,15 @@ class CacheScheme(object):
         self.__alias = alias
 
     @property
+    def alias(self):
+        return self.__alias
+
+    @property
     def scheme(self):
         """
         базовое свойство - схема кеширования
         """
-        return self.cache_conf['schemes'][self.__alias]
+        return self.cache_conf['schemes'][self.alias]
 
     @property
     def enabled(self):
