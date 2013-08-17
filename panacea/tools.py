@@ -39,7 +39,7 @@ def cache_thing(model, cache_key, data, cond_dnf=[[]], timeout=None):
 
     # Write data to cache
     if timeout is not None:
-        txn.setex(cache_key, data, timeout)
+        txn.setex(cache_key, timeout, data)
     else:
         txn.set(cache_key, data)
 

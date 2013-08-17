@@ -2,7 +2,6 @@
 import os
 
 from mock import patch, Mock
-from mockredis import mock_redis_client
 
 from django.test import TestCase
 from django.core.urlresolvers import reverse
@@ -14,12 +13,10 @@ from test_project.test_app import models
 from panacea import config as conf
 
 from redis import Redis
-from django.conf import settings
 
-@patch('cacheops.conf.redis_client', mock_redis_client())
 class BaseTestCaseMixin(object):
     def setUp(self):
-        self.redis = mock_redis_client()
+        self.redis = Redis(**settings.CACHEOPS_REDIS)
         self.redis.flushdb()
         self.promo1 = models.Promo.objects.create(name='promo1')
         self.promo2 = models.Promo.objects.create(name='promo2')
@@ -428,4 +425,34 @@ class TestCaching(BaseTestCaseMixin, TestCase):
             _content,
             _dnf,
             _ttl
+        )
+
+    def test2(self):
+        """
+        тут проверяем, что ключ сохраняется в правильной схеме,
+        а также что врено сохраняется контент
+        """
+        self.redis.flushdb()
+
+        url = reverse('api_promo_single_cache1',
+                      args=(self.promo1.id,))
+
+        r = self.client.get(url)
+        self.assertEqual(r.status_code, 200)
+
+        _model = models.Promo
+        _key = 'panacea:/api/promo/single/%s/cache1;default_qs1=&default_qs2=&custom_qs1=;' \
+               'HTTP_USER_AGENT=&HTTP_ACCEPT_ENCODING=&HTTP_CUSTOM_META=;' \
+               'some_cookie1=&some_cookie2=&custom_cookie=' % self.promo1.id
+
+        _content = '{"id": %s, "name": "promo1"}' % self.promo1.id
+        _ttl = 600
+        _dnf = [[('id', self.promo1.id)]]
+
+        self.assertEqual(len(self.redis.keys('*')), 7)
+        self.assertEqual(self.redis.get(_key), _content)
+
+        self.assertIn(_key, self.redis.keys('*'))
+        self.assertIn(_key, self.redis.smembers(
+            'conj:test_app.promo:id=%s' % self.promo1.id)
         )
