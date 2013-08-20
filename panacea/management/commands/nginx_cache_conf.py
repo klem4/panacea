@@ -25,7 +25,8 @@ class Command(BaseCommand):
            u"для кеширования описанных в конфиге api"
 
     def handle(self, *args, **options):
-        cache_schemes = self.get_schemes()
+        for scheme in self.get_schemes():
+            self.render(scheme)
 
     def get_schemes(self):
         for alias in conf.get(
@@ -36,8 +37,16 @@ class Command(BaseCommand):
             scheme = CacheScheme.filter(alias=alias)
             if not scheme:
                 raise CommandError('No scheme for alias %s' % alias)
+            yield scheme
 
-            print self.get_location(scheme)
+    def render(self, scheme):
+        location = self.get_location(scheme)
+        key = self.get_location(scheme)
+
+        print location
+
+    def get_key(self, scheme):
+        pass
 
     def get_location(self, scheme):
         alias = scheme.alias
