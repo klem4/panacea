@@ -204,12 +204,28 @@ class CacheScheme(object):
         return self._get_part('COOKIES', request)
 
 
+    @classmethod
+    def get_default_part_keys(cls, part_type):
+        """
+        дефолтные ключи учитывающиеся при
+        составлении части ключа part_type
+        """
+        return cls.cache_conf['key_defaults'].get(part_type, [])
+
     def get_part_keys(self, part_type):
         """
-        кастомные ключи уситывающиеся при
+        кастомные ключи учитывающиеся при
         составлении части ключа part_type
         """
         return self.scheme.get(part_type, [])
+
+    def get_all_part_keys(self, part_type):
+        """
+        все(кастомные+дефолтные) ключи учитывающиеся при
+        составлении части ключа part_type
+        """
+        return self.get_default_part_keys(part_type) + \
+            self.get_part_keys(part_type)
 
     def _get_part(self, part_type, request):
         data_dict = getattr(request, part_type)
@@ -218,8 +234,7 @@ class CacheScheme(object):
         # cначала идут дефолтные значения, затем
         # кастомные для данной схемы
 
-        keys = self.cache_conf['key_defaults'].get(part_type, []) + \
-            self.get_part_keys(part_type)
+        keys = self.get_all_part_keys(part_type)
 
         return separator.join(
             "%s=%s" % (key, data_dict.get(key, '')) for key in keys

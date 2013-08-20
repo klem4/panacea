@@ -5,7 +5,6 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core import urlresolvers
 from django.template.loader import render_to_string
 
-from panacea import config as conf
 from panacea.schemes import CacheScheme
 from panacea.tools import get_logger
 
@@ -37,11 +36,40 @@ class Command(BaseCommand):
 
     def render(self, scheme):
         location = self.get_location(scheme)
-        key = self.get_location(scheme)
+        key = self.get_key(scheme)
         print location
+        print key
+        print "\n\n"
 
     def get_key(self, scheme):
-        pass
+        request = self.make_request(scheme)
+        return scheme.generate_store_key(request)
+
+    def make_request(self, scheme):
+
+        _get = dict(map(
+            lambda key: (key, '$arg_%s' % key),
+            scheme.get_all_part_keys('GET')
+        ))
+
+        _cookies = dict(map(
+            lambda key: (key, '$cookie_%s' % key),
+            scheme.get_all_part_keys('COOKIES')
+        ))
+
+        _meta = dict(map(
+            lambda key: (key, '$%s' % key),
+            scheme.get_all_part_keys('META')
+        ))
+
+        _path = '$uri'
+
+        return FakeRequest(
+            path=_path,
+            query_string_dict=_get,
+            cookies_dict=_cookies,
+            headers_dict=_meta
+        )
 
     def get_location(self, scheme):
         alias = scheme.alias
