@@ -59,15 +59,6 @@ class CacheScheme(object):
     def __init__(self, alias):
         self.__alias = alias
 
-    @classmethod
-    def all(cls):
-        u"""
-        возвращает все имющиеся в конфиге схемы кешироваия
-        """
-        return [
-            cls.filter(alias=alias)
-            for alias in cls.cache_conf.get('schemes', {}).keys()
-        ]
 
     @property
     def alias(self):
@@ -138,6 +129,15 @@ class CacheScheme(object):
         if urlconf:
             return urlconf.url_name
 
+    @classmethod
+    def all(cls):
+        u"""
+        возвращает все имющиеся в конфиге схемы кешироваия
+        """
+        return [
+            cls.filter(alias=alias)
+            for alias in cls.cache_conf.get('schemes', {}).keys()
+        ]
 
     def generate_store_key(self, request):
         """

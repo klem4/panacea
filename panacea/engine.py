@@ -27,8 +27,6 @@ class CacheEngine(object):
         # получим ключ, по которому будет
         # сохранен контент ответа api
         panacea_key = self.scheme.generate_store_key(self.request)
-        logger.debug("process_caching: %s" % panacea_key)
-
         self.store_schemes(panacea_key)
 
     def store_schemes(self, _key):
