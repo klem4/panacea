@@ -39,7 +39,6 @@ class Command(BaseCommand):
 
             print self.get_location(scheme)
 
-    #api/promo/single/(?P<pk>\d+)/?$
     def get_location(self, scheme):
         alias = scheme.alias
 
