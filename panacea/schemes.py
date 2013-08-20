@@ -59,6 +59,16 @@ class CacheScheme(object):
     def __init__(self, alias):
         self.__alias = alias
 
+    @classmethod
+    def all(cls):
+        u"""
+        возвращает все имющиеся в конфиге схемы кешироваия
+        """
+        return [
+            cls.filter(alias=alias)
+            for alias in cls.cache_conf.get('schemes', {}).keys()
+        ]
+
     @property
     def alias(self):
         return self.__alias

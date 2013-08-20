@@ -25,24 +25,19 @@ class Command(BaseCommand):
            u"для кеширования описанных в конфиге api"
 
     def handle(self, *args, **options):
-        for scheme in self.get_schemes():
+        schemes = self.get_schemes()
+        if not schemes:
+            raise CommandError("Schemes list is empty")
+
+        for scheme in schemes:
             self.render(scheme)
 
     def get_schemes(self):
-        for alias in conf.get(
-                'PCFG_CACHING', default={}
-        ).get(
-                'schemes', {}
-        ).keys():
-            scheme = CacheScheme.filter(alias=alias)
-            if not scheme:
-                raise CommandError('No scheme for alias %s' % alias)
-            yield scheme
+        return CacheScheme.all()
 
     def render(self, scheme):
         location = self.get_location(scheme)
         key = self.get_location(scheme)
-
         print location
 
     def get_key(self, scheme):

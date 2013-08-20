@@ -5,6 +5,7 @@ from mock import patch, Mock
 
 from django.test import TestCase
 from django.core.urlresolvers import reverse
+from django.core.management import call_command
 from django.utils import simplejson
 from django.utils.unittest import skipIf
 from django.conf import settings
@@ -440,14 +441,12 @@ class TestCaching(BaseTestCaseMixin, TestCase):
         r = self.client.get(url)
         self.assertEqual(r.status_code, 200)
 
-        _model = models.Promo
         _key = 'panacea:/api/promo/single/%s/cache1;default_qs1=&default_qs2=&custom_qs1=;' \
                'HTTP_USER_AGENT=&HTTP_ACCEPT_ENCODING=&HTTP_CUSTOM_META=;' \
                'some_cookie1=&some_cookie2=&custom_cookie=' % self.promo1.id
 
         _content = '{"id": %s, "name": "promo1"}' % self.promo1.id
         _ttl = 600
-        _dnf = [[('id', self.promo1.id)]]
 
         self.assertEqual(len(self.redis.keys('*')), 7)
         self.assertEqual(self.redis.get(_key), _content)
@@ -456,3 +455,10 @@ class TestCaching(BaseTestCaseMixin, TestCase):
         self.assertIn(_key, self.redis.smembers(
             'conj:test_app.promo:id=%s' % self.promo1.id)
         )
+
+class NginxConfCmdTestCase(BaseTestCaseMixin, TestCase):
+    u"""
+    теутсруем комманду генерации конфига nginx
+    """
+    def testSmoke(self):
+        call_command('nginx_cache_conf')
