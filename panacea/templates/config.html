@@ -1,0 +1,7 @@
+{% autoescape off %}
+location @django {include conf/django.conf; }
+
+{% for item in items %}
+{% include 'location.html' with item=item %}
+{% endfor %}
+{% endautoescape %}

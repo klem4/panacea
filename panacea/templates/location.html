@@ -1,0 +1,7 @@
+location {{ item.location }} {
+    set $redis_key {{ item.redis_key }};
+    set $redis_db {{ redis.db }};
+    redis_pass     {{ redis.host }}:{{ redis.port }};
+    default_type   {{ default_type }};
+    error_page     502 404 = @django;
+}
