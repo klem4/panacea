@@ -1,6 +1,4 @@
 # coding: utf-8
-import os
-
 from mock import patch, Mock
 
 from django.test import TestCase

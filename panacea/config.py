@@ -42,6 +42,12 @@ PCFG_ALLOWED_STATUS_CODES = (200,)
 # будут кешироваться только ответы данного ct
 PCFG_ALLOWED_CONTENT_TYPE = 'application/json'
 
+# настройки коннекта к redis, должно совпадать с cacheops
+PCFG_REDIS = {
+    'host': 'localhost',
+    'port': 6379,
+    'db': 1
+}
 
 # структура конфигурации кеширования
 # должна быть полностью переопределена в приложении

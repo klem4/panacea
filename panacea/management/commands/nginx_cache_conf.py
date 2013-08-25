@@ -1,12 +1,14 @@
 # coding: utf-8
 
 import  re
+
 from django.core.management.base import BaseCommand, CommandError
 from django.core import urlresolvers
 from django.template.loader import render_to_string
 
 from panacea.schemes import CacheScheme
 from panacea.tools import get_logger
+from panacea import config as conf
 
 logger = get_logger()
 
@@ -28,22 +30,48 @@ class Command(BaseCommand):
         if not schemes:
             raise CommandError("Schemes list is empty")
 
-        for scheme in schemes:
-            self.render(scheme)
+        items = map(
+            lambda scheme: {
+                'location': self.get_location(scheme),
+                'redis_key': self.get_redis_key(scheme)
+            }, schemes
+        )
 
-    def get_schemes(self):
+        rendered_config = render_to_string(
+            'config.html', {
+                'items': items,
+                'redis':conf.get('PCFG_REDIS'),
+                'default_type': conf.get('PCFG_ALLOWED_CONTENT_TYPE')
+            }
+        )
+
+        print rendered_config
+
+    def get_schemes(self, **kwargs):
         return CacheScheme.all()
 
-    def render(self, scheme):
-        location = self.get_location(scheme)
-        key = self.get_key(scheme)
-        print location
-        print key
-        print "\n\n"
-
-    def get_key(self, scheme):
+    def get_redis_key(self, scheme):
         request = self.make_request(scheme)
         return scheme.generate_store_key(request)
+
+    def get_location(self, scheme):
+        alias = scheme.alias
+
+        urlconf = urlresolvers.get_resolver(None).reverse_dict.get(alias)
+        if not urlconf:
+            raise CommandError('No reverse match for api: %s' % alias)
+
+        pattern = urlconf[1]
+        replace_map = (
+           (r'/\(\?P<.+?>(.+?)\)/', r'/\1/'),
+            ('^/(.+)', '\1'),
+            ('\$$', '')
+        )
+
+        for repl in replace_map:
+            pattern = re.sub(repl[0], repl[1], pattern)
+
+        return "~ ^/%s$" % pattern
 
     def make_request(self, scheme):
 
@@ -70,25 +98,3 @@ class Command(BaseCommand):
             cookies_dict=_cookies,
             headers_dict=_meta
         )
-
-    def get_location(self, scheme):
-        alias = scheme.alias
-
-        urlconf = urlresolvers.get_resolver(None).reverse_dict.get(alias)
-        if not urlconf:
-            raise CommandError('No reverse match for api: %s' % alias)
-
-        pattern = urlconf[1]
-        replace_map = (
-           (r'/\(\?P<.+?>(.+?)\)/', r'/\1/'),
-            ('^/(.+)', '\1'),
-            ('\$$', '')
-        )
-
-        for repl in replace_map:
-            pattern = re.sub(repl[0], repl[1], pattern)
-
-        return "~ ^/%s$" % pattern
-
-
-
