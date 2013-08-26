@@ -1,4 +1,5 @@
 # coding: utf-8
+from StringIO import StringIO
 from mock import patch, Mock
 
 from django.test import TestCase
@@ -457,6 +458,14 @@ class TestCaching(BaseTestCaseMixin, TestCase):
 class NginxConfCmdTestCase(BaseTestCaseMixin, TestCase):
     u"""
     теутсруем комманду генерации конфига nginx
+    сравниваем то что генерит команда, с заранее сохраненным эталоном
     """
-    def testSmoke(self):
-        call_command('nginx_cache_conf')
+    def testConfigNotChanged(self):
+        stdout = StringIO()
+        call_command('nginx_cache_conf', stdout=stdout)
+        stdout.seek(0)
+
+        cmd_output = "".join([line for line in stdout.readlines()])
+        config = open("test_project/test_app/tests_nginx_conf.txt", "r").read()
+
+        self.assertEqual(cmd_output, config)

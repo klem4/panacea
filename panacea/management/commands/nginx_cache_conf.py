@@ -45,7 +45,7 @@ class Command(BaseCommand):
             }
         )
 
-        print rendered_config
+        self.stdout.write(rendered_config)
 
     def get_schemes(self, **kwargs):
         return CacheScheme.all()
