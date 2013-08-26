@@ -466,6 +466,6 @@ class NginxConfCmdTestCase(BaseTestCaseMixin, TestCase):
         stdout.seek(0)
 
         cmd_output = "".join([line for line in stdout.readlines()])
-        config = open("test_project/test_app/tests_nginx_conf.txt", "r").read()
+        config = open("test_project/test_project/test_app/tests_nginx_conf.txt", "r").read()
 
         self.assertEqual(cmd_output, config)
