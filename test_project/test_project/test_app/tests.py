@@ -17,9 +17,9 @@ from redis import Redis
 class BaseTestCaseMixin(object):
     def setUp(self):
         self.redis = Redis(**settings.CACHEOPS_REDIS)
-        self.redis.flushdb()
         self.promo1 = models.Promo.objects.create(name='promo1')
         self.promo2 = models.Promo.objects.create(name='promo2')
+        self.redis.flushdb()
 
     def tearDown(self):
         pass
@@ -401,8 +401,6 @@ class TestCaching(BaseTestCaseMixin, TestCase):
         тут проверяем, что cached_as вызывается с правильными
         параметрами
         """
-        self.redis.flushdb()
-
         url = reverse('api_promo_single_cache1',
                       args=(self.promo1.id,))
 
@@ -432,8 +430,6 @@ class TestCaching(BaseTestCaseMixin, TestCase):
         тут проверяем, что ключ сохраняется в правильной схеме,
         а также что врено сохраняется контент
         """
-        self.redis.flushdb()
-
         url = reverse('api_promo_single_cache1',
                       args=(self.promo1.id,))
 
@@ -454,6 +450,14 @@ class TestCaching(BaseTestCaseMixin, TestCase):
         self.assertIn(_key, self.redis.smembers(
             'conj:test_app.promo:id=%s' % self.promo1.id)
         )
+
+    def test3(self):
+        """
+        тестируем кеширование схемы, в которой
+        одна модель присутствует дважды, и ключ сохраняется
+        в две разные схемы cacheops
+        """
+
 
 class NginxConfCmdTestCase(BaseTestCaseMixin, TestCase):
     u"""
