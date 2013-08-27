@@ -49,7 +49,7 @@ class ApiSmokeTestCases(BaseTestCaseMixin, TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             self.load(response),
-            {'id': self.promo1.id, 'name': self.promo1.name}
+            {'id': self.promo1.id, 'name': self.promo1.name, 'age': None}
         )
 
 
@@ -413,7 +413,7 @@ class TestCaching(BaseTestCaseMixin, TestCase):
                'HTTP_USER_AGENT=&HTTP_ACCEPT_ENCODING=&HTTP_CUSTOM_META=;' \
                'some_cookie1=&some_cookie2=&custom_cookie=' % self.promo1.id
 
-        _content = '{"id": %s, "name": "promo1"}' % self.promo1.id
+        _content = '{"id": %s, "name": "promo1", "age": null}' % self.promo1.id
         _ttl = 600
         _dnf = [[('id', self.promo1.id)]]
 
@@ -440,7 +440,7 @@ class TestCaching(BaseTestCaseMixin, TestCase):
                'HTTP_USER_AGENT=&HTTP_ACCEPT_ENCODING=&HTTP_CUSTOM_META=;' \
                'some_cookie1=&some_cookie2=&custom_cookie=' % self.promo1.id
 
-        _content = '{"id": %s, "name": "promo1"}' % self.promo1.id
+        _content = '{"id": %s, "name": "promo1", "age": null}' % self.promo1.id
         _ttl = 600
 
         self.assertEqual(len(self.redis.keys('*')), 7)
@@ -457,6 +457,28 @@ class TestCaching(BaseTestCaseMixin, TestCase):
         одна модель присутствует дважды, и ключ сохраняется
         в две разные схемы cacheops
         """
+        age = 1
+        url = reverse('api_promo_single_cache2',
+                      args=(self.promo1.id, age))
+
+        self.client.get(url)
+
+        key1 = "panacea:/api/promo/single/%s/%s/cache2;" \
+               "default_qs1=&default_qs2=;" \
+               "HTTP_USER_AGENT=&HTTP_ACCEPT_ENCODING=;" \
+               "some_cookie1=&some_cookie2=" % (
+                    self.promo1.id, age
+                )
+
+        self.assertIn(key1, self.redis.keys('*'))
+
+        self.assertIn(key1, self.redis.smembers(
+            "conj:test_app.promo:id=%s" % self.promo1.id))
+
+        self.assertIn(key1, self.redis.smembers(
+            "conj:test_app.promo:age=%s&id=%s" % (age, self.promo1.id)))
+
+        self.assertTrue(len(self.redis.keys('panacea*')) == 1)
 
 
 class NginxConfCmdTestCase(BaseTestCaseMixin, TestCase):

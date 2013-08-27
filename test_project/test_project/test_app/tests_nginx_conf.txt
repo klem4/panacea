@@ -10,6 +10,14 @@ location ~ ^/api/promo/single/\d+/cache1/?$ {
     error_page     502 404 = @django;
 }
 
+location ~ ^/api/promo/single/\d+/\d+/cache2/?$ {
+    set $redis_key panacea:$uri;default_qs1=$arg_default_qs1&default_qs2=$arg_default_qs2;HTTP_USER_AGENT=$HTTP_USER_AGENT&HTTP_ACCEPT_ENCODING=$HTTP_ACCEPT_ENCODING;some_cookie1=$cookie_some_cookie1&some_cookie2=$cookie_some_cookie2;
+    set $redis_db 1;
+    redis_pass     localhost:6379;
+    default_type   application/json;
+    error_page     502 404 = @django;
+}
+
 location ~ ^/api/promo/single/\d+/?$ {
     set $redis_key panacea:$uri;default_qs1=$arg_default_qs1&default_qs2=$arg_default_qs2;HTTP_USER_AGENT=$HTTP_USER_AGENT&HTTP_ACCEPT_ENCODING=$HTTP_ACCEPT_ENCODING;some_cookie1=$cookie_some_cookie1&some_cookie2=$cookie_some_cookie2;
     set $redis_db 1;

@@ -69,7 +69,11 @@ class Command(BaseCommand):
         )
 
         for repl in replace_map:
-            pattern = re.sub(repl[0], repl[1], pattern)
+            while True:
+                new = re.sub(repl[0], repl[1], pattern)
+                if new == pattern:
+                    break
+                pattern = new
 
         return "~ ^/%s$" % pattern
 

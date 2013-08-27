@@ -29,6 +29,11 @@ class CacheConf(object):
         return self.__model
 
     @property
+    def model_manager(self):
+        _manager = self.model_conf.get('manager', 'objects')
+        return getattr(self.model, _manager)
+
+    @property
     def queryset_conditions(self):
         return self.model_conf.get('queryset_conditions', {})
 
@@ -38,7 +43,7 @@ class CacheConf(object):
         return dnf(qs)
 
     def get_cached_queryset(self):
-        qs = self.model.objects.all()
+        qs = self.model_manager.all()
         filter_cond = {}
         for model_field, lookup_field in self.queryset_conditions.items():
             filter_cond[model_field] = self.urlconf.kwargs[lookup_field]
@@ -46,6 +51,7 @@ class CacheConf(object):
         if filter_cond:
             qs = qs.filter(**filter_cond)
         return qs
+
 
 class CacheScheme(object):
     u"""

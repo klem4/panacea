@@ -250,6 +250,24 @@ PCFG_CACHING = {
                     }
                 }
             ]
+        },
+
+        'api_promo_single_cache2': {
+            'models': [
+                {
+                    'model': 'test_app.Promo',
+                    'queryset_conditions': {
+                        'id': 'pk'
+                    }
+                },
+                {
+                    'model': 'test_app.Promo',
+                    'queryset_conditions': {
+                        'id': 'pk',
+                        'age': 'age'
+                    }
+                }
+            ]
         }
     }
 }

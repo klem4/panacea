@@ -54,7 +54,7 @@ urlpatterns = patterns('',
     ),
 
     url(
-        r'^api/promo/single/(?P<pk>\d+)/cache2/?$',
+        r'^api/promo/single/(?P<pk>\d+)/(?P<age>\d+)/cache2/?$',
         views.APIPromoSingleView.as_view(),
         name='api_promo_single_cache2'
     ),
