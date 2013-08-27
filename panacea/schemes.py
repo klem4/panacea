@@ -133,11 +133,12 @@ class CacheScheme(object):
     def all(cls):
         u"""
         возвращает все имющиеся в конфиге схемы кешироваия
+        отсортированный по имени алиаса
         """
-        return [
+        return sorted([
             cls.filter(alias=alias)
             for alias in cls.cache_conf.get('schemes', {}).keys()
-        ]
+        ], cmp=lambda a, b: cmp(a.alias, b.alias))
 
     def generate_store_key(self, request):
         """
