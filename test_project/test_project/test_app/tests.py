@@ -481,6 +481,25 @@ class TestCaching(BaseTestCaseMixin, TestCase):
         self.assertTrue(len(self.redis.keys('panacea*')) == 1)
 
 
+    def test4(self):
+        """
+        тестируем кеширование схемы  с составным
+        lookup полем
+        """
+        url = reverse('api_promo_single_cache3',
+                      args=(self.promo1.id,))
+
+        self.client.get(url)
+
+        _key = "panacea:/api/promo/single/%s/cache3;default_qs1=&default_qs2=;" \
+               "HTTP_USER_AGENT=&HTTP_ACCEPT_ENCODING=;" \
+               "some_cookie1=&some_cookie2=" % self.promo1.id
+
+        self.assertIn(_key, self.redis.keys('*'))
+
+        self.assertIn(_key, self.redis.smembers(
+             'conj:test_app.promoarea:promo_id=%s' % self.promo1.id))
+
 class NginxConfCmdTestCase(BaseTestCaseMixin, TestCase):
     u"""
     теутсруем комманду генерации конфига nginx

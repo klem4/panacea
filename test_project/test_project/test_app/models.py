@@ -6,3 +6,7 @@ class Promo(models.Model):
     age = models.IntegerField(null=True)
 
 
+class PromoArea(models.Model):
+    promo = models.ForeignKey(Promo)
+
+

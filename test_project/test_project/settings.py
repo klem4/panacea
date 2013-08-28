@@ -268,6 +268,16 @@ PCFG_CACHING = {
                     }
                 }
             ]
+        },
+        'api_promo_single_cache3':  {
+            'models': [
+                {
+                    'model': 'test_app.PromoArea',
+                    'queryset_conditions': {
+                        'promo__id': 'pk'
+                    }
+                }
+            ]
         }
     }
 }
