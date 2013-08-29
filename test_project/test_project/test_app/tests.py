@@ -580,4 +580,9 @@ class InvalidationTestCase(BaseTestCaseMixin, TestCase):
         )
 
     def testInvalidateModels(self):
-        pass
+        self.assertTrue(self.redis.keys('panacea:api_promo_single_cache3*'))
+        invalidate_model('test_app.PromoArea')
+        self.assertFalse(self.redis.keys('panacea:api_promo_single_cache3*'))
+        self.assertEqual(
+            len(self.redis.keys(self.all_panacea_keys)), self.total_keys_cnt - 1
+        )

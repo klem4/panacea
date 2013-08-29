@@ -89,11 +89,16 @@ def _get(_globals, name, **kwargs):
 
 def get_aliases_by_models(models):
     from panacea.schemes import CacheScheme
+    if not isinstance(models, (list, tuple)):
+        models = [models,]
+
+    aliases = []
     for scheme in CacheScheme.all():
         for model_conf in scheme.model_confs:
-            if model_conf.model_conf['model'] in models:
-                yield scheme.alias
+            if model_conf['model'] in models:
+                aliases.append(scheme.alias)
                 break
+    return aliases
 
 
 def get_logger():
