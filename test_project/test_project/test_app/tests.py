@@ -546,18 +546,18 @@ class InvalidationTestCase(BaseTestCaseMixin, TestCase):
                       args=(self.promo2.id,))
         ]
 
-    def testInvalidateAll(self):
         self.assertEqual(self.redis.keys(self.all_panacea_keys), [])
 
         for url in self.urls:
             self.client.get(url)
 
-        total_keys_cnt = len(self.redis.keys('*'))
+        self.total_keys_cnt = len(self.redis.keys(self.all_panacea_keys))
 
         self.assertEqual(
             len(self.redis.keys(self.all_panacea_keys)), len(self.urls)
         )
 
+    def testInvalidateAll(self):
         invalidate_all()
 
         self.assertEqual(
@@ -565,24 +565,19 @@ class InvalidationTestCase(BaseTestCaseMixin, TestCase):
         )
 
         self.assertEqual(
-            len(self.redis.keys('*')), total_keys_cnt - len(self.urls)
+            len(self.redis.keys(self.all_panacea_keys)), self.total_keys_cnt - len(self.urls)
         )
 
     def testInvalidateAliases(self):
-        self.assertEqual(self.redis.keys(self.all_panacea_keys), [])
-
-        for url in self.urls:
-            self.client.get(url)
-
-        total_keys_cnt = len(self.redis.keys('*'))
-
-        self.assertEqual(
-            len(self.redis.keys(self.all_panacea_keys)), len(self.urls)
-        )
-
         self.assertEqual(
             len(self.redis.keys('panacea:api_promo_single_cache1*')), 2)
 
         invalidate_alias('api_promo_single_cache1')
         self.assertFalse(self.redis.keys('panacea:api_promo_single_cache1*'))
         self.assertTrue(self.redis.keys(self.all_panacea_keys))
+        self.assertEqual(
+            len(self.redis.keys(self.all_panacea_keys)), self.total_keys_cnt - 2
+        )
+
+    def testInvalidateModels(self):
+        pass
