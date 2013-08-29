@@ -531,6 +531,8 @@ class NginxConfCmdTestCase(BaseTestCaseMixin, TestCase):
 
 
 class InvalidationTestCase(BaseTestCaseMixin, TestCase):
+    all_panacea_keys = '%s*' % conf.get('PCFG_KEY_PREFIX')
+
     def setUp(self):
         super(InvalidationTestCase, self).setUp()
         self.urls = [
@@ -539,12 +541,13 @@ class InvalidationTestCase(BaseTestCaseMixin, TestCase):
             reverse('api_promo_single_cache2',
                       args=(self.promo1.id, 1)),
             reverse('api_promo_single_cache1',
-                      args=(self.promo1.id,))
+                      args=(self.promo1.id,)),
+            reverse('api_promo_single_cache1',
+                      args=(self.promo2.id,))
         ]
 
     def testInvalidateAll(self):
-        all_panacea_keys = '%s*' % conf.get('PCFG_KEY_PREFIX')
-        self.assertEqual(self.redis.keys(all_panacea_keys), [])\
+        self.assertEqual(self.redis.keys(self.all_panacea_keys), [])
 
         for url in self.urls:
             self.client.get(url)
@@ -552,15 +555,34 @@ class InvalidationTestCase(BaseTestCaseMixin, TestCase):
         total_keys_cnt = len(self.redis.keys('*'))
 
         self.assertEqual(
-            len(self.redis.keys(all_panacea_keys)), 3
+            len(self.redis.keys(self.all_panacea_keys)), len(self.urls)
         )
 
         invalidate_all()
 
         self.assertEqual(
-            len(self.redis.keys(all_panacea_keys)), 0
+            len(self.redis.keys(self.all_panacea_keys)), 0
         )
 
         self.assertEqual(
-            len(self.redis.keys('*')), total_keys_cnt - 3
+            len(self.redis.keys('*')), total_keys_cnt - len(self.urls)
         )
+
+    def testInvalidateAliases(self):
+        self.assertEqual(self.redis.keys(self.all_panacea_keys), [])
+
+        for url in self.urls:
+            self.client.get(url)
+
+        total_keys_cnt = len(self.redis.keys('*'))
+
+        self.assertEqual(
+            len(self.redis.keys(self.all_panacea_keys)), len(self.urls)
+        )
+
+        self.assertEqual(
+            len(self.redis.keys('panacea:api_promo_single_cache1*')), 2)
+
+        invalidate_alias('api_promo_single_cache1')
+        self.assertFalse(self.redis.keys('panacea:api_promo_single_cache1*'))
+        self.assertTrue(self.redis.keys(self.all_panacea_keys))
