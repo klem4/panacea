@@ -11,6 +11,8 @@ from django.conf import settings
 
 from test_project.test_app import models
 from panacea import config as conf
+from panacea.invalidation import (
+    invalidate_all, invalidate_alias, invalidate_model)
 
 from redis import Redis
 
@@ -500,6 +502,7 @@ class TestCaching(BaseTestCaseMixin, TestCase):
         self.assertIn(_key, self.redis.smembers(
              'conj:test_app.promoarea:promo_id=%s' % self.promo1.id))
 
+
 class NginxConfCmdTestCase(BaseTestCaseMixin, TestCase):
     u"""
     теутсруем комманду генерации конфига nginx
@@ -514,3 +517,39 @@ class NginxConfCmdTestCase(BaseTestCaseMixin, TestCase):
         config = open("test_project/test_project/test_app/tests_nginx_conf.txt", "r").read()
 
         self.assertEqual(cmd_output, config)
+
+
+class InvalidationTestCase(BaseTestCaseMixin, TestCase):
+    def setUp(self):
+        super(InvalidationTestCase, self).setUp()
+        self.urls = [
+            reverse('api_promo_single_cache3',
+                      args=(self.promo1.id,)),
+            reverse('api_promo_single_cache2',
+                      args=(self.promo1.id, 1)),
+            reverse('api_promo_single_cache1',
+                      args=(self.promo1.id,))
+        ]
+
+    def testInvalidateAll(self):
+        all_panacea_keys = '%s*' % conf.get('PCFG_KEY_PREFIX')
+        self.assertEqual(self.redis.keys(all_panacea_keys), [])\
+
+        for url in self.urls:
+            self.client.get(url)
+
+        total_keys_cnt = len(self.redis.keys('*'))
+
+        self.assertEqual(
+            len(self.redis.keys(all_panacea_keys)), 3
+        )
+
+        invalidate_all()
+
+        self.assertEqual(
+            len(self.redis.keys(all_panacea_keys)), 0
+        )
+
+        self.assertEqual(
+            len(self.redis.keys('*')), total_keys_cnt - 3
+        )

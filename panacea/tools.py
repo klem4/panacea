@@ -87,6 +87,15 @@ def _get(_globals, name, **kwargs):
                 return kwargs.get('default')
 
 
+def get_aliases_by_models(models):
+    from panacea.schemes import CacheScheme
+    for scheme in CacheScheme.all():
+        for model_conf in scheme.model_confs:
+            if model_conf.model_conf['model'] in models:
+                yield scheme.alias
+                break
+
+
 def get_logger():
     import panacea.config as conf
     return logging.getLogger(conf.get('PCFG_LOGGER_NAME'))
