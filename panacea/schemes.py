@@ -165,7 +165,7 @@ class CacheScheme(object):
         prefix}{path}{querystring_args}{headers}{cookies}
         """
         separator = conf.get("PCFG_PART_SEPARATOR")
-        return "{prefix}{path}%s%s" % (
+        return "{prefix}{alias}:{path}%s%s" % (
                 separator,
                 separator.join(
                 "{%s}" % part for part in self.key_defaults_order
@@ -179,6 +179,7 @@ class CacheScheme(object):
         """
         key_parts = {
             'prefix': conf.get('PCFG_KEY_PREFIX'),
+            'alias': self.alias,
             'path': request.path,
         }
 
