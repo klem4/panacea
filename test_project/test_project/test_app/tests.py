@@ -30,15 +30,6 @@ class BaseTestCaseMixin(object):
         return simplejson.loads(response.content)
 
 
-class CacheConfTestCase(BaseTestCaseMixin, TestCase):
-    """
-    проверяем работоспособность класса CacheConf
-    """
-    @skipIf(True, "NOT IMPLEMENTED")
-    def testMe(self):
-        pass
-
-
 class ApiSmokeTestCases(BaseTestCaseMixin, TestCase):
     """
     смоковые тесты апишек тестового приложения
