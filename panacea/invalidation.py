@@ -5,10 +5,16 @@ from connection import redis_conn
 
 conn = redis_conn()
 
+
+def delete(*keys):
+    if keys:
+        conn.delete(*keys)
+    return keys
+
+
 def invalidate_all():
-    conn.delete(
-        *conn.keys('%s*' % conf.get('PCFG_KEY_PREFIX'))
-    )
+    keys = conn.keys('%s*' % conf.get('PCFG_KEY_PREFIX'))
+    return delete(*keys)
 
 
 def invalidate_alias(aliases):
@@ -22,10 +28,13 @@ def invalidate_alias(aliases):
         aliases
     )
 
+    results = []
     for p in key_patterns:
-        conn.delete(*conn.keys(p))
+        results += delete(*conn.keys(p))
+
+    return results
 
 
 def invalidate_model(models):
     aliases = get_aliases_by_models(models)
-    invalidate_alias(aliases)
+    return invalidate_alias(aliases)

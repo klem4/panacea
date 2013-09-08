@@ -1,6 +1,6 @@
 # coding: utf-8
 
-import  re
+import re
 
 from django.core.management.base import BaseCommand, CommandError
 from django.core import urlresolvers
@@ -11,6 +11,7 @@ from panacea.tools import get_logger
 from panacea import config as conf
 
 logger = get_logger()
+
 
 class FakeRequest(object):
     def __init__(self, path='', query_string_dict=None,
@@ -63,7 +64,7 @@ class Command(BaseCommand):
 
         pattern = urlconf[1]
         replace_map = (
-           (r'/\(\?P<.+?>(.+?)\)/', r'/\1/'),
+            (r'/\(\?P<.+?>(.+?)\)/', r'/\1/'),
             ('^/(.+)', '\1'),
             ('\$$', '')
         )
