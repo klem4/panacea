@@ -17,7 +17,7 @@ env:
     - CI_ENABLED="1"
 
 install:
-  - pip install "$DJ"
+  - pip install $DJ
   - pip install $COPS
   - pip install $DRF
   - pip install -r requires-test.txt
