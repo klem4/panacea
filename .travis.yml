@@ -5,13 +5,14 @@ python:
 
 env:
   matrix:
-    - DJANGO="django==1.4.3 --use-mirrors"
-    - DJANGO="django==1.5.1 --use-mirrors"
+    - D="django==1.4.3 --use-mirrors" C="django-cacheops==1.0.0 --use-mirrors"
+    - D="django==1.5.1 --use-mirrors" C="django-cacheops==1.0.0 --use-mirrors"
   global:
     - CI_ENABLED="1"
 
 install:
-  - pip install $DJANGO
+  - pip install $D
+  - pip install $C
   - pip install -r requires.txt
   - pip install -r requires-test.txt
 
