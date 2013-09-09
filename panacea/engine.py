@@ -90,7 +90,11 @@ class CacheEngine(object):
         u"""
         кешируем только ответы определенного типа
         """
-        return self.response.get('content-type') == conf.get('PCFG_ALLOWED_CONTENT_TYPE')
+        ct_and_charset = self.response.get('content-type').split(';')
+        try:
+            return ct_and_charset[0] == conf.get('PCFG_ALLOWED_CONTENT_TYPE')
+        except IndexError:
+            return False
 
     def chk_scheme(self):
         """
