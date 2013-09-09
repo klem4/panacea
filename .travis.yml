@@ -2,18 +2,16 @@ language: python
 
 python:
   - "2.7.3"
-  - "2.7.5"
 
 env:
   matrix:
-    - DJ="django==1.4.3 --use-mirrors" CO="djang-cacheops==1.0.0"
-    - DJ="django==1.5.2 --use-mirrors" CO="djang-cacheops==1.0.0"
+    - DJ="django==1.4.3 --use-mirrors"
+    - DJ="django==1.5.2 --use-mirrors"
   global:
     - CI_ENABLED="1"
 
 install:
   - pip install $DJ
-  - pip install $CO
   - pip install -r requires-test.txt
 
   - pip install https://github.com/klem4/mockredis/archive/master.zip

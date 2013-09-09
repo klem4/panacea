@@ -3,3 +3,4 @@ https://github.com/klem4/mockredis/archive/master.zip
 MySQL-python==1.2.4
 redis==2.4.12
 djangorestframework==2.2.7
+django-cacheops==1.0.0
