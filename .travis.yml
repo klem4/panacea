@@ -5,14 +5,18 @@ python:
 
 env:
   matrix:
-    - D="django==1.4.3 --use-mirrors" C="django-cacheops==1.0.0 --use-mirrors"
-    - D="django==1.5.1 --use-mirrors" C="django-cacheops==1.0.0 --use-mirrors"
+    - DJ="django==1.4.3 --use-mirrors" COPS="django-cacheops==1.0.2 --use-mirrors" DRF="djangorestframework==2.3.6"
+    - DJ="django==1.4.3 --use-mirrors" COPS="django-cacheops==1.0.2 --use-mirrors" DRF="djangorestframework==2.3.7"
+    - DJ="django==1.5.1 --use-mirrors" COPS="django-cacheops==1.0.2 --use-mirrors" DRF="djangorestframework==2.3.6"
+    - DJ="django==1.5.1 --use-mirrors" COPS="django-cacheops==1.0.2 --use-mirrors" DRF="djangorestframework==2.3.7"
+
   global:
     - CI_ENABLED="1"
 
 install:
-  - pip install $D
-  - pip install $C
+  - pip install $DJ
+  - pip install $COPS
+  - pip install $DRF
   - pip install -r requires-test.txt
 
   - pip install https://github.com/klem4/mockredis/archive/master.zip
