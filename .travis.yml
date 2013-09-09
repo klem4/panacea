@@ -7,8 +7,9 @@ python:
 
 env:
   matrix:
-    - DJANGO="django==1.3 --use-mirrors"
+    - DJANGO="django==1.3.7 --use-mirrors"
     - DJANGO="django==1.4.3 --use-mirrors"
+    - DJANGO="django==1.4.7 --use-mirrors"
     - DJANGO="django==1.5.2 --use-mirrors"
   global:
     - CI_ENABLED="1"
