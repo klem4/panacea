@@ -6,13 +6,14 @@ python:
 
 env:
   matrix:
-    - DJANGO="django==1.4.3 --use-mirrors"
-    - DJANGO="django==1.5.2 --use-mirrors"
+    - DJ="django==1.4.3 --use-mirrors" CO="djang-cacheops==1.0.0"
+    - DJ="django==1.5.2 --use-mirrors" CO="djang-cacheops==1.0.0"
   global:
     - CI_ENABLED="1"
 
 install:
-  - pip install $DJANGO
+  - pip install $DJ
+  - pip install $CO
   - pip install -r requires-test.txt
 
   - pip install https://github.com/klem4/mockredis/archive/master.zip
