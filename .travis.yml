@@ -17,7 +17,7 @@ env:
     - CI_ENABLED="1"
 
 install:
-  - pip install "django==$DJ --use-mirrors"
+  - pip install "django==${DJ} --use-mirrors"
   - pip install $COPS
   - pip install $DRF
   - pip install -r requires-test.txt
