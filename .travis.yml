@@ -5,19 +5,19 @@ python:
 
 env:
   matrix:
-    - DJ="1.4.3" COPS="django-cacheops==1.0.2 --use-mirrors" DRF="djangorestframework==2.2.7"
-    - DJ="1.4.3" COPS="django-cacheops==1.0.2 --use-mirrors" DRF="djangorestframework==2.3.6"
-    - DJ="1.4.3" COPS="django-cacheops==1.0.2 --use-mirrors" DRF="djangorestframework==2.3.7"
+    - DJ="django==1.4.3 --use-mirrors" COPS="django-cacheops==1.0.2 --use-mirrors" DRF="djangorestframework==2.2.7"
+    - DJ="django==1.4.3 --use-mirrors" COPS="django-cacheops==1.0.2 --use-mirrors" DRF="djangorestframework==2.3.6"
+    - DJ="django==1.4.3 --use-mirrors" COPS="django-cacheops==1.0.2 --use-mirrors" DRF="djangorestframework==2.3.7"
 
-    - DJ="1.5.1" COPS="django-cacheops==1.0.2 --use-mirrors" DRF="djangorestframework==2.2.7"
-    - DJ="1.5.1" COPS="django-cacheops==1.0.2 --use-mirrors" DRF="djangorestframework==2.3.6"
-    - DJ="1.5.1" COPS="django-cacheops==1.0.2 --use-mirrors" DRF="djangorestframework==2.3.7"
+    - DJ="django==1.5.1 --use-mirrors" COPS="django-cacheops==1.0.2 --use-mirrors" DRF="djangorestframework==2.2.7"
+    - DJ="django==1.5.1 --use-mirrors" COPS="django-cacheops==1.0.2 --use-mirrors" DRF="djangorestframework==2.3.6"
+    - DJ="django==1.5.1 --use-mirrors" COPS="django-cacheops==1.0.2 --use-mirrors" DRF="djangorestframework==2.3.7"
 
   global:
     - CI_ENABLED="1"
 
 install:
-  - pip install "django==${DJ} --use-mirrors"
+  - pip install "$DJ"
   - pip install $COPS
   - pip install $DRF
   - pip install -r requires-test.txt
