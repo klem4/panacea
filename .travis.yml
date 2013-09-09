@@ -13,7 +13,6 @@ env:
 install:
   - pip install $D
   - pip install $C
-  - pip install -r requires.txt
   - pip install -r requires-test.txt
 
   - pip install https://github.com/klem4/mockredis/archive/master.zip
