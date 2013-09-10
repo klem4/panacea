@@ -2,7 +2,7 @@
 location @django {include conf/django.conf; }
 
 
-location ~ ^/api/promo/single/\d+/cache1/?$ {
+location ~ "^/api/promo/single/\d+/cache1/?$" {
     set $redis_key panacea:api_promo_single_cache1:$uri:default_qs1=$arg_default_qs1&default_qs2=$arg_default_qs2&custom_qs1=$arg_custom_qs1:HTTP_USER_AGENT=$HTTP_USER_AGENT&HTTP_ACCEPT_ENCODING=$HTTP_ACCEPT_ENCODING&HTTP_CUSTOM_META=$HTTP_CUSTOM_META:some_cookie1=$cookie_some_cookie1&some_cookie2=$cookie_some_cookie2&custom_cookie=$cookie_custom_cookie;
     set $redis_db 1;
     redis_pass     localhost:6379;
@@ -10,7 +10,7 @@ location ~ ^/api/promo/single/\d+/cache1/?$ {
     error_page     502 404 = @django;
 }
 
-location ~ ^/api/promo/single/\d+/\d+/cache2/?$ {
+location ~ "^/api/promo/single/\d+/\d+/cache2/?$" {
     set $redis_key panacea:api_promo_single_cache2:$uri:default_qs1=$arg_default_qs1&default_qs2=$arg_default_qs2:HTTP_USER_AGENT=$HTTP_USER_AGENT&HTTP_ACCEPT_ENCODING=$HTTP_ACCEPT_ENCODING:some_cookie1=$cookie_some_cookie1&some_cookie2=$cookie_some_cookie2;
     set $redis_db 1;
     redis_pass     localhost:6379;
@@ -18,7 +18,7 @@ location ~ ^/api/promo/single/\d+/\d+/cache2/?$ {
     error_page     502 404 = @django;
 }
 
-location ~ ^/api/promo/single/\d+/cache3/?$ {
+location ~ "^/api/promo/single/\d+/cache3/?$" {
     set $redis_key panacea:api_promo_single_cache3:$uri:default_qs1=$arg_default_qs1&default_qs2=$arg_default_qs2:HTTP_USER_AGENT=$HTTP_USER_AGENT&HTTP_ACCEPT_ENCODING=$HTTP_ACCEPT_ENCODING:some_cookie1=$cookie_some_cookie1&some_cookie2=$cookie_some_cookie2;
     set $redis_db 1;
     redis_pass     localhost:6379;
@@ -26,7 +26,7 @@ location ~ ^/api/promo/single/\d+/cache3/?$ {
     error_page     502 404 = @django;
 }
 
-location ~ ^/api/promo/single/\d+/?$ {
+location ~ "^/api/promo/single/\d+/?$" {
     set $redis_key panacea:api_promo_single_empty_scheme:$uri:default_qs1=$arg_default_qs1&default_qs2=$arg_default_qs2:HTTP_USER_AGENT=$HTTP_USER_AGENT&HTTP_ACCEPT_ENCODING=$HTTP_ACCEPT_ENCODING:some_cookie1=$cookie_some_cookie1&some_cookie2=$cookie_some_cookie2;
     set $redis_db 1;
     redis_pass     localhost:6379;
@@ -34,7 +34,7 @@ location ~ ^/api/promo/single/\d+/?$ {
     error_page     502 404 = @django;
 }
 
-location ~ ^/api/promo/single/\d+/first/?$ {
+location ~ "^/api/promo/single/\d+/first/?$" {
     set $redis_key panacea:api_promo_single_test_key_first:$uri:default_qs1=$arg_default_qs1&default_qs2=$arg_default_qs2:HTTP_USER_AGENT=$HTTP_USER_AGENT&HTTP_ACCEPT_ENCODING=$HTTP_ACCEPT_ENCODING:some_cookie1=$cookie_some_cookie1&some_cookie2=$cookie_some_cookie2;
     set $redis_db 1;
     redis_pass     localhost:6379;
@@ -42,7 +42,7 @@ location ~ ^/api/promo/single/\d+/first/?$ {
     error_page     502 404 = @django;
 }
 
-location ~ ^/api/promo/single/\d+/second/?$ {
+location ~ "^/api/promo/single/\d+/second/?$" {
     set $redis_key panacea:api_promo_single_test_key_second:$uri:default_qs1=$arg_default_qs1&default_qs2=$arg_default_qs2:HTTP_USER_AGENT=$HTTP_USER_AGENT&HTTP_ACCEPT_ENCODING=$HTTP_ACCEPT_ENCODING:some_cookie1=$cookie_some_cookie1&some_cookie2=$cookie_some_cookie2;
     set $redis_db 1;
     redis_pass     localhost:6379;
@@ -50,7 +50,7 @@ location ~ ^/api/promo/single/\d+/second/?$ {
     error_page     502 404 = @django;
 }
 
-location ~ ^/api/promo/single/\d+/third/?$ {
+location ~ "^/api/promo/single/\d+/third/?$" {
     set $redis_key panacea:api_promo_single_test_key_third:$uri:default_qs1=$arg_default_qs1&default_qs2=$arg_default_qs2&custom_qs1=$arg_custom_qs1:HTTP_USER_AGENT=$HTTP_USER_AGENT&HTTP_ACCEPT_ENCODING=$HTTP_ACCEPT_ENCODING&HTTP_CUSTOM_META=$HTTP_CUSTOM_META:some_cookie1=$cookie_some_cookie1&some_cookie2=$cookie_some_cookie2&custom_cookie=$cookie_custom_cookie;
     set $redis_db 1;
     redis_pass     localhost:6379;

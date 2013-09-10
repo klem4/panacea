@@ -76,7 +76,7 @@ class Command(BaseCommand):
                     break
                 pattern = new
 
-        return "~ ^/%s$" % pattern
+        return "^/%s$" % pattern
 
     def make_request(self, scheme):
 

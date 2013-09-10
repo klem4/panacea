@@ -1,4 +1,4 @@
-location {{ item.location }} {
+location ~ "{{ item.location }}" {
     set $redis_key {{ item.redis_key }};
     set $redis_db {{ redis.db }};
     redis_pass     {{ redis.host }}:{{ redis.port }};
