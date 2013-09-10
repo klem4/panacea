@@ -117,6 +117,7 @@ import sys
 # в тестовом приложении
 sys.path.append('/Users/klem4/Development/panacea_v2/test_project/test_project')
 sys.path.append('/home/klem4/Development/panacea_v2/test_project/test_project')
+sys.path.append('/home/klem4/Development/panacea_v2/panacea/test_project/test_project')
 
 INSTALLED_APPS = (
     'django.contrib.auth',
