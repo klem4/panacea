@@ -23,7 +23,7 @@ PCFG_ENABLED = False
 PCFG_KEY_PREFIX = 'panacea:'
 
 # разделитель частей ключа
-PCFG_PART_SEPARATOR = ';'
+PCFG_PART_SEPARATOR = ':'
 
 # разделитель значений внутри части ключа
 PCFG_VALUES_SEPARATOR = '&'

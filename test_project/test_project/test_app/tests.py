@@ -179,7 +179,7 @@ class TestGenerateKey(BaseTestCaseMixin, TestCase):
                     'api_promo_single_test_key_second',
                     args=(self.promo1.id,)
                 ),
-                'panacea:/api/promo/single/%s/second;'
+                'panacea:/api/promo/single/%s/second:'
                 'default_qs1=' % self.promo1.id
             )
         ]
@@ -196,7 +196,7 @@ class TestGenerateKey(BaseTestCaseMixin, TestCase):
         )
 
         key = 'panacea:api_promo_single_test_key_first' \
-              ':/api/promo/single/%s/first;;;' % self.promo1.id
+              ':/api/promo/single/%s/first:::' % self.promo1.id
 
         old = settings.PCFG_CACHING['key_defaults']
         settings.PCFG_CACHING['key_defaults'] = {
@@ -223,8 +223,8 @@ class TestGenerateKey(BaseTestCaseMixin, TestCase):
         ) + '?default_qs1=value1&default_qs2=value2'
 
         key = 'panacea:api_promo_single_test_key_second' \
-              ':/api/promo/single/%s/second;default_qs1=value1&default_qs2=value2;' \
-              'HTTP_USER_AGENT=&HTTP_ACCEPT_ENCODING=;' \
+              ':/api/promo/single/%s/second:default_qs1=value1&default_qs2=value2:' \
+              'HTTP_USER_AGENT=&HTTP_ACCEPT_ENCODING=:' \
               'some_cookie1=&some_cookie2=' % self.promo1.id
 
         r = self.client.get(url)
@@ -244,8 +244,8 @@ class TestGenerateKey(BaseTestCaseMixin, TestCase):
         ) + '?default_qs2=value2&default_qs1=value1'
 
         key = 'panacea:api_promo_single_test_key_second' \
-              ':/api/promo/single/%s/second;default_qs1=value1&default_qs2=value2;' \
-              'HTTP_USER_AGENT=&HTTP_ACCEPT_ENCODING=;' \
+              ':/api/promo/single/%s/second:default_qs1=value1&default_qs2=value2:' \
+              'HTTP_USER_AGENT=&HTTP_ACCEPT_ENCODING=:' \
               'some_cookie1=&some_cookie2=' % self.promo1.id
 
         r = self.client.get(url)
@@ -264,8 +264,8 @@ class TestGenerateKey(BaseTestCaseMixin, TestCase):
         ) + '?default_qs2=value2&default_qs1=value1&x=1&y=2'
 
         key = 'panacea:api_promo_single_test_key_second' \
-              ':/api/promo/single/%s/second;default_qs1=value1&default_qs2=value2;' \
-              'HTTP_USER_AGENT=&HTTP_ACCEPT_ENCODING=;' \
+              ':/api/promo/single/%s/second:default_qs1=value1&default_qs2=value2:' \
+              'HTTP_USER_AGENT=&HTTP_ACCEPT_ENCODING=:' \
               'some_cookie1=&some_cookie2=' % self.promo1.id
 
         r = self.client.get(url)
@@ -284,8 +284,8 @@ class TestGenerateKey(BaseTestCaseMixin, TestCase):
         ) + '?default_qs2=value2&default_qs1=value1&x=1&y=2'
 
         key = 'panacea:api_promo_single_test_key_second' \
-              ':/api/promo/single/%s/second;default_qs1=value1&default_qs2=value2;' \
-              'HTTP_USER_AGENT=some/user/agent&HTTP_ACCEPT_ENCODING=some/encoding;' \
+              ':/api/promo/single/%s/second:default_qs1=value1&default_qs2=value2:' \
+              'HTTP_USER_AGENT=some/user/agent&HTTP_ACCEPT_ENCODING=some/encoding:' \
               'some_cookie1=&some_cookie2=' % self.promo1.id
 
         r = self.client.get(url, **{
@@ -307,8 +307,8 @@ class TestGenerateKey(BaseTestCaseMixin, TestCase):
             args=(self.promo1.id,)
         ) + '?default_qs2=value2&default_qs1=value1&x=1&y=2'
 
-        key = 'panacea:api_promo_single_test_key_second:/api/promo/single/%s/second;default_qs1=value1&default_qs2=value2;' \
-              'HTTP_USER_AGENT=some/user/agent&HTTP_ACCEPT_ENCODING=some/encoding;' \
+        key = 'panacea:api_promo_single_test_key_second:/api/promo/single/%s/second:default_qs1=value1&default_qs2=value2:' \
+              'HTTP_USER_AGENT=some/user/agent&HTTP_ACCEPT_ENCODING=some/encoding:' \
               'some_cookie1=cookie_value1&some_cookie2=cookie_value2' % self.promo1.id
 
         self.client.cookies['some_cookie1'] = 'cookie_value1'
@@ -336,10 +336,10 @@ class TestGenerateKey(BaseTestCaseMixin, TestCase):
         ) + '?default_qs2=value2&default_qs1=value1&x=1&y=2&custom_qs1=xxx'
 
         key = 'panacea:api_promo_single_test_key_third' \
-              ':/api/promo/single/%s/third;' \
-              'default_qs1=value1&default_qs2=value2&custom_qs1=xxx;' \
+              ':/api/promo/single/%s/third:' \
+              'default_qs1=value1&default_qs2=value2&custom_qs1=xxx:' \
               'HTTP_USER_AGENT=some/user/agent&HTTP_ACCEPT_ENCODING=some/encoding' \
-              '&HTTP_CUSTOM_META=custom_meta_value;' \
+              '&HTTP_CUSTOM_META=custom_meta_value:' \
               'some_cookie1=cookie_value1&some_cookie2=cookie_value2' \
               '&custom_cookie=yyy' % self.promo1.id
 
@@ -370,10 +370,10 @@ class TestGenerateKey(BaseTestCaseMixin, TestCase):
         ) + '?default_qs2=value2&default_qs1=value1&x=1&y=2'
 
         key = 'panacea:api_promo_single_test_key_third' \
-              ':/api/promo/single/%s/third;' \
-              'default_qs1=value1&default_qs2=value2&custom_qs1=;' \
+              ':/api/promo/single/%s/third:' \
+              'default_qs1=value1&default_qs2=value2&custom_qs1=:' \
               'HTTP_USER_AGENT=some/user/agent&HTTP_ACCEPT_ENCODING=some/encoding' \
-              '&HTTP_CUSTOM_META=;' \
+              '&HTTP_CUSTOM_META=:' \
               'some_cookie1=cookie_value1&some_cookie2=cookie_value2' \
               '&custom_cookie=' % self.promo1.id
 
@@ -410,8 +410,8 @@ class TestCaching(BaseTestCaseMixin, TestCase):
         self.assertTrue(patched_cache_thing.called)
         _model = models.Promo
         _key = 'panacea:api_promo_single_cache1' \
-               ':/api/promo/single/%s/cache1;default_qs1=&default_qs2=&custom_qs1=;' \
-               'HTTP_USER_AGENT=&HTTP_ACCEPT_ENCODING=&HTTP_CUSTOM_META=;' \
+               ':/api/promo/single/%s/cache1:default_qs1=&default_qs2=&custom_qs1=:' \
+               'HTTP_USER_AGENT=&HTTP_ACCEPT_ENCODING=&HTTP_CUSTOM_META=:' \
                'some_cookie1=&some_cookie2=&custom_cookie=' % self.promo1.id
 
         _content = '{"id": %s, "name": "promo1", "age": null}' % self.promo1.id
@@ -438,8 +438,8 @@ class TestCaching(BaseTestCaseMixin, TestCase):
         self.assertEqual(r.status_code, 200)
 
         _key = 'panacea:api_promo_single_cache1' \
-               ':/api/promo/single/%s/cache1;default_qs1=&default_qs2=&custom_qs1=;' \
-               'HTTP_USER_AGENT=&HTTP_ACCEPT_ENCODING=&HTTP_CUSTOM_META=;' \
+               ':/api/promo/single/%s/cache1:default_qs1=&default_qs2=&custom_qs1=:' \
+               'HTTP_USER_AGENT=&HTTP_ACCEPT_ENCODING=&HTTP_CUSTOM_META=:' \
                'some_cookie1=&some_cookie2=&custom_cookie=' % self.promo1.id
 
         _content = '{"id": %s, "name": "promo1", "age": null}' % self.promo1.id
@@ -466,9 +466,9 @@ class TestCaching(BaseTestCaseMixin, TestCase):
         self.client.get(url)
 
         key1 = "panacea:api_promo_single_cache2" \
-               ":/api/promo/single/%s/%s/cache2;" \
-               "default_qs1=&default_qs2=;" \
-               "HTTP_USER_AGENT=&HTTP_ACCEPT_ENCODING=;" \
+               ":/api/promo/single/%s/%s/cache2:" \
+               "default_qs1=&default_qs2=:" \
+               "HTTP_USER_AGENT=&HTTP_ACCEPT_ENCODING=:" \
                "some_cookie1=&some_cookie2=" % (
                     self.promo1.id, age
                 )
@@ -495,8 +495,8 @@ class TestCaching(BaseTestCaseMixin, TestCase):
         self.client.get(url)
 
         _key = "panacea:api_promo_single_cache3" \
-               ":/api/promo/single/%s/cache3;default_qs1=&default_qs2=;" \
-               "HTTP_USER_AGENT=&HTTP_ACCEPT_ENCODING=;" \
+               ":/api/promo/single/%s/cache3:default_qs1=&default_qs2=:" \
+               "HTTP_USER_AGENT=&HTTP_ACCEPT_ENCODING=:" \
                "some_cookie1=&some_cookie2=" % self.promo1.id
 
         self.assertIn(_key, self.redis.keys('*'))
