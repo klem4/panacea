@@ -52,6 +52,25 @@ class ApiSmokeTestCases(BaseTestCaseMixin, TestCase):
         ).status_code, 200)
 
 
+    def testFatalErrorHandled(self):
+        """
+        проверяем, что даде при фатальной ошибке внутри middleware
+        запрос всеравно выполняется порректно
+        """
+        with patch('panacea.engine.CacheEngine.allow_caching') as _mock:
+            _mock.side_effect = Exception()
+
+            self.assertEqual(self.client.get(
+                reverse('api_promo_list'),
+            ).status_code, 200)
+
+        with patch('panacea.engine.CacheEngine.process_caching') as _mock:
+            _mock.side_effect = Exception()
+
+            self.assertEqual(self.client.get(
+                reverse('api_promo_list'),
+            ).status_code, 200)
+
 class TestAllowCachingMethods(BaseTestCaseMixin, TestCase):
     """
     класс тестирования метода принимающего решение

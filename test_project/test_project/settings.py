@@ -2,7 +2,7 @@
 # coding: utf-8
 
 DEBUG = True
-LOG_LEVEL = 'ERROR'
+LOG_LEVEL = 'INFO'
 
 TEMPLATE_DEBUG = DEBUG
 
