@@ -11,4 +11,6 @@ django caching middleware, based on django-cacheops for using with httpredis ngi
 Формат ключа, под которым происходит сохранение контента в redis является "понятным" для регулярных выражений nginx, в результате
 чего и происходит вторая часть магии: достовать закешированные ответы в дальнейшем сможет непосредственно nginx, благодаря модулю [HttpRedis](http://wiki.nginx.org/HttpRedis)
 
+[django-cacheops](https://github.com/Suor/django-cacheops "django-cacheops") + [HttpRedis(Nginx)](http://wiki.nginx.org/HttpRedis) = **django-panacea**
+
 ## Установка
