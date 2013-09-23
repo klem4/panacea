@@ -39,3 +39,5 @@ response(таких как куки, аргументы query_string и проч
 
 `MIDDLEWARE_CLASSES.insert(0, 'panacea.middleware.NginxRedisCachingMiddleware')`
 
+## Пример использования
+## Описание конфигурации
