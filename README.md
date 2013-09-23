@@ -14,3 +14,17 @@ django caching middleware, based on django-cacheops for using with httpredis ngi
 [django-cacheops](https://github.com/Suor/django-cacheops "django-cacheops") + [HttpRedis(Nginx)](http://wiki.nginx.org/HttpRedis) = **django-panacea**
 
 ## Установка
+Последнюю стабильную версию можно поставить из pip:
+
+`pip install django-panacea==0.1.2`
+
+Никаких зависимостей за собой не тянет, но для работы естественно необходимо окружение в виде:
+ - django >= 1.4.3
+ - django-cacheops >= 1.0.0
+ - django-rest-franework >= 2.3.6(на этом фреймворке я использую panacea), в теории, возможно использования любых других 
+совместимых с django фреймворков, но для этого возможно потребуются небольшие доработки, связанные с получение данных из объекта
+response(таких как куки, аргументы query_string и прочее, если класс объекта response далеко ушел от стандартного джанговского,
+нужно будет допилить)
+
+Полную матрицу тестирования можно посмотреть (тут)[https://github.com/klem4/panacea/blob/master/.travis.yml]
+
