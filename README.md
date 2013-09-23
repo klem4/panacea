@@ -40,4 +40,23 @@ response(таких как куки, аргументы query_string и проч
 `MIDDLEWARE_CLASSES.insert(0, 'panacea.middleware.NginxRedisCachingMiddleware')`
 
 ## Пример использования
+Это очень простой пример, не раскрывающий всех возможностей приложения, его и еще несколько сэмплов можно увидеть при запуске тестов
+тестового проекта: https://github.com/klem4/panacea/tree/master/test_project
+
+
+У нас есть api, отвечающее по следующему урлу: 
+`url(
+        r'^api/promo/single/(?P<pk>\d+)/cache1/?$',
+        views.APIPromoSingleView.as_view(),
+        name='api_promo_single_cache1'
+    ),`
+    
+И мы хотим кешировать ответы данного апи таким образом, чтобы:
+ - в составлении ключа учавстсвовали: парамерт query_string с именем "custom_qs1", заголовок "HTTP_CUSTOM_META" и кука с именем "custom_cookie"
+ (для любого различного сочетания этих параметров ключ будет различным, например запросы
+`/api/promo/single/123456/cache1/?custom_qs1=100500` и `/api/promo/single/123456/cache1/?custom_qs1=9999` будут сохранены под разными ключами) 
+ - кеш апи должен инвалидироваться при изменении(удалеии/редактировании) модели Promo, описанной в приложении test_app, при этом
+ конъюнкция cacheops, в которую сохранится ключ, должна строиться на основе следующего QuerySet: 
+
+`Promo.objects.filter(id=<параметр pk захваченный из урла>)`
 ## Описание конфигурации
