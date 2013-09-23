@@ -59,4 +59,36 @@ response(таких как куки, аргументы query_string и проч
  конъюнкция cacheops, в которую сохранится ключ, должна строиться на основе следующего QuerySet: 
 
 `Promo.objects.filter(id=<параметр pk захваченный из урла>)`
+
+Для этого, нам необходимо в settings.py нашего приложения, помимо пунктов, указанных в разделе "Настройка", разместить следующие строки:
+
+
+    PCFG_ENABLED = True
+
+    PCFG_CACHING = {
+        'key_defaults': {
+            'GET': [],
+            'META': [],
+            'COOKIES': []
+        },
+        'key_defaults_order': ['GET', 'META', 'COOKIES'],
+    
+        'schemes': {
+            'api_promo_single_cache1': {
+                'GET': ['custom_qs1'],
+                'META': ['HTTP_CUSTOM_META'],
+                'COOKIES': ['custom_cookie'],
+                'models': [
+                    {
+                        'model': 'test_app.Promo',
+                        'queryset_conditions': {
+                            'id': 'pk'
+                        }
+                    }
+                ]
+            }
+        }
+    }
+
+
 ## Описание конфигурации
