@@ -1,9 +1,9 @@
 django-panacea [![Build Status](https://travis-ci.org/klem4/panacea.png?branch=master)](https://travis-ci.org/klem4/panacea)
 =======
+django caching middleware, based on django-cacheops for using with httpredis nginx module
 
 *In Greek mythology, Panacea (Greek Πανάκεια, Panakeia) was a goddess of Universal remedy*
 
-[django-cacheops](https://github.com/Suor/django-cacheops "django-cacheops") + [HttpRedis(Nginx)](http://wiki.nginx.org/HttpRedis) = **django-panacea**
 
 Проект представляет собой приложение django, которое имеет в своем составе middleware, позволяющий средствами django-cacheops
 сохранять в redis полный ответ, сгенерированный django-view, при этом, благодаря использованию [django-cacheops](https://github.com/Suor/django-cacheops "django-cacheops") , привязывать
