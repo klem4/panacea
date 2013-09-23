@@ -131,7 +131,18 @@ location @django {include conf/django.conf; }
  собственно данный префикс и path(url без агрументов query-string), и опциональные, такие как: аргументы query-string, cookies, headres)
  - `PCFG_VALUES_SEPARATOR = '&'` - разделитель значений внутри какой-либо части ключа(например: если мы учитываем в ключе два парамертра
  qyery_string 'foo' и 'bar', то выглядеть эт будет так: foo=<значение>&bar=<значение>, где '&' и есть данный параметр )
+ - `PCFG_DEFAULT_TTL = 600` - время жизни ключа в секундах
+ - `PCFG_LOGGER_NAME = None` - имя логгера
+ - `PCFG_ALLOWED_STATUS_CODES = (200,)` - допустимые коды ответов кеширования, по дефолту кешируются только ответы с кодом 200
+ - `PCFG_ALLOWED_CONTENT_TYPE = 'application/json'` - допустимы content-type Ответа для кеширования, по дефолту кешируются только вьюхи, отдающие
+ application/json
  - 
+     PCFG_REDIS = {
+         'host': 'localhost',
+         'port': 6379,
+         'db': 1
+     }
+настройки коннекта к redis, *должно в точности совпадать с базой cacheops* !!!
  
 
 #### Конфигурирование схем кеширования
