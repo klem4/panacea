@@ -65,6 +65,9 @@ response(таких как куки, аргументы query_string и проч
 
     PCFG_ENABLED = True
 
+    # настройки коннекта к redis, должно совпадать с cacheops
+    PCFG_REDIS = CACHEOPS_REDIS
+ 
     PCFG_CACHING = {
         'key_defaults': {
             'GET': [],
