@@ -28,3 +28,14 @@ response(таких как куки, аргументы query_string и проч
 
 Полную матрицу тестирования можно посмотреть (тут)[https://github.com/klem4/panacea/blob/master/.travis.yml]
 
+## Настройка
+Для включения в работе необходимо внести изменения в *settings.py* вашего проекта:
+ - Добавить panacea в список приложени: 
+
+`INSTALLED_APPS.append('panacea')`
+
+ - Добавить middleware в список мидлвейров(желательно поближе к началу списка, так как обратка ответа
+ идет по списку мидлвейров снизу в вверх): 
+
+`MIDDLEWARE_CLASSES.insert(0, 'panacea.middleware.NginxRedisCachingMiddleware')`
+
