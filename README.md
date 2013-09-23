@@ -91,4 +91,22 @@ response(таких как куки, аргументы query_string и проч
     }
 
 
+Далее, на необходимо подключить в работу nginx(HttpRedis должен быть установлен). 
+Если конфигурация в settings.py задана верно, то можно выполнить команду:
+
+`./manage.py nginx_cache_conf`
+
+В результате ее работы, на экран будет выведен готовый блок конфигурации nginx, который необходиом запнклюдить в основной конфиг nginx.
+В данном случае вывод будет следующий:
+location @django {include conf/django.conf; }
+
+
+    location ~ "^/api/promo/single/\d+/cache1/?$" {
+        set $redis_key panacea:api_promo_single_cache1:$uri:custom_qs1=$arg_custom_qs1:HTTP_CUSTOM_META=$HTTP_CUSTOM_META:custom_cookie=$cookie_custom_cookie;
+        set $redis_db 1;
+        redis_pass     localhost:6379;
+        default_type   application/json;
+        error_page     502 404 = @django;
+    }
+
 ## Описание конфигурации
