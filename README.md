@@ -136,13 +136,11 @@ location @django {include conf/django.conf; }
  - `PCFG_ALLOWED_STATUS_CODES = (200,)` - допустимые коды ответов кеширования, по дефолту кешируются только ответы с кодом 200
  - `PCFG_ALLOWED_CONTENT_TYPE = 'application/json'` - допустимы content-type Ответа для кеширования, по дефолту кешируются только вьюхи, отдающие
  application/json
- - 
-     PCFG_REDIS = {
+ - PCFG_REDIS = {
          'host': 'localhost',
          'port': 6379,
          'db': 1
-     }
-настройки коннекта к redis, *должно в точности совпадать с базой cacheops* !!!
+     } настройки коннекта к redis, *должно в точности совпадать с базой cacheops* !!!
  
 
 #### Конфигурирование схем кеширования
